@@ -1,0 +1,105 @@
+:root {
+    /* Customize these variables as per your brand guidelines */
+    --login-bg-color: #f7f8fa;
+    --login-text-color: #333;
+    --login-primary-color: #1e90ff;
+    --login-secondary-color: #555;
+    --login-border-color: #ddd;
+    --login-font-family: "Helvetica Neue", Arial, sans-serif;
+    --login-font-size-base: 16px;
+    --login-radius: 4px;
+    --login-spacing: 1rem;
+  }
+  
+  /* Container */
+  .login-container {
+    background: #fff;
+    color: var(--login-text-color);
+    max-width: 320px;
+    margin: 5vh auto;
+    padding: 2rem;
+    border: 1px solid var(--login-border-color);
+    border-radius: var(--login-radius);
+    font-family: var(--login-font-family);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Heading */
+  .login-heading {
+    margin: 0 0 var(--login-spacing) 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  
+  /* Inputs */
+  .login-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: var(--login-font-size-base);
+    border: 1px solid var(--login-border-color);
+    border-radius: var(--login-radius);
+    margin-bottom: var(--login-spacing);
+    font-family: var(--login-font-family);
+    background: #fff;
+    color: var(--login-text-color);
+    transition: border-color 0.2s ease;
+  
+    outline: none;
+  }
+  
+  .login-input:focus {
+    border-color: var(--login-primary-color);
+  }
+  
+  /* Button */
+  .login-button {
+    display: inline-block;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: var(--login-font-size-base);
+    font-weight: 600;
+    text-align: center;
+    color: #fff;
+    background: var(--login-primary-color);
+    border: none;
+    border-radius: var(--login-radius);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-family: var(--login-font-family);
+  }
+  
+  .login-button:hover,
+  .login-button:focus {
+    background: #187bcd; /* Slightly darker shade for hover/focus */
+  }
+  
+  /* Text & Links */
+  .login-text {
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--login-secondary-color);
+    margin-top: var(--login-spacing);
+    margin-bottom: 0;
+    line-height: 1.4;
+  }
+  
+  .login-link {
+    color: var(--login-primary-color);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .login-link:hover,
+  .login-link:focus {
+    text-decoration: underline;
+  }
+  
+  /* Background wrapper (optional if you want a full-page style) */
+  body {
+    background: var(--login-bg-color);
+    margin: 0;
+    font-family: var(--login-font-family);
+  }
+  
