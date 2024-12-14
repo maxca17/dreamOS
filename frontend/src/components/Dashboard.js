@@ -4,30 +4,54 @@ import NavBar from '../constants/Navbar';
 import { supabase } from '../supabaseClient';
 
 const Dashboard = () => {
-  const [portfolioCompanies, setPortfolioCompanies] = useState([]);
-  const [totalCompanies, setTotalCompanies] = useState(0);
+  const [portfolioCompaniestotal, setPortfolioCompaniestotal] = useState([]);
+  const [activeCompanies, setActiveCompanies] = useState(0);
+  const [exits, setExits] = useState(0);
+  const [totalOutofBusiness, setTotalOutofBusiness] = useState(0);
 
-  const fetchTotalCompanies = async () => {
-    const { data, error } = await supabase.from('companies').select('*');
+
+
+  const fetchTotalOutofBusiness = async () => {
+    const { data, error } = await supabase.from('companies').select('*').eq('out_of_business', true);
     if (error) {
-      console.error('Error fetching total companies:', error);
+      console.error('Error fetching total out of business:', error);
     } else {
-      setTotalCompanies(data.length);
+      setTotalOutofBusiness(data.length);
     }
   };
 
-  const fetchPortfolioCompanies = async () => {
-    const { data, error } = await supabase.from('companies').select('*').eq('portfolio_company', true);
+  const fetchExits = async () => {
+    const { data, error } = await supabase.from('companies').select('*').eq('exit', true);
+    if (error) {
+      console.error('Error fetching exits:', error);
+    } else {
+      setExits(data.length);
+    }
+  };
+
+  const fetchActiveCompanies = async () => {
+    const { data, error } = await supabase.from('companies').select('*').eq('active', true);
+    if (error) {
+      console.error('Error fetching total companies:', error);
+    } else {
+      setActiveCompanies(data.length);
+    }
+  };
+
+  const fetchPortfolioCompaniestotal = async () => {
+    const { data, error } = await supabase.from('companies').select('*').eq('status', 'Portfolio Company');
     if (error) {
       console.error('Error fetching portfolio companies:', error);
     } else {
-      setPortfolioCompanies(data);
+      setPortfolioCompaniestotal(data);
     }
   };
 
   useEffect(() => {
-    fetchPortfolioCompanies();
-    fetchTotalCompanies();
+    fetchPortfolioCompaniestotal();
+    fetchActiveCompanies();
+    fetchExits(); 
+    fetchTotalOutofBusiness();
   }, []);
 
   // Sample data
@@ -110,28 +134,32 @@ const Dashboard = () => {
           </div>
           <div className="metrics">
             <div className="metric-item">
-              <strong>{portfolioCompanies.length}</strong>
-              <span>Portfolio companies</span>
+              <strong>{portfolioCompaniestotal.length}</strong>
+              <span>Total Investments</span>
             </div>
             <div className="metric-item">
-              <strong>{totalCompanies}</strong>
-              <span>Total Companies</span>
+              <strong>{activeCompanies}</strong>
+              <span>Active Investments</span>
             </div>
             <div className="metric-item">
-              <strong>10000+</strong>
-              <span>Founder updates</span>
+              <strong>{exits}</strong>
+              <span>Exits</span>
             </div>
             <div className="metric-item">
-              <strong>3200+</strong>
-              <span>Meetings taken</span>
+              <strong>{totalOutofBusiness}</strong>
+              <span>Out of Business</span>
             </div>
             <div className="metric-item">
               <strong>56300+</strong>
-              <span>Email interactions</span>
+              <span>Markups</span>
             </div>
             <div className="metric-item">
               <strong>10700+</strong>
-              <span>Total deals</span>
+              <span>Average Check Size</span>
+            </div>
+            <div className="metric-item">
+              <strong>10700+</strong>
+              <span>Total Capital Deployed</span>
             </div>
           </div>
           {/* <div className="actions">
@@ -142,7 +170,7 @@ const Dashboard = () => {
 
         <div className="content-sections">
           <div className="unicorns-section">
-            <h3>Soma Top Unicorn Breakouts</h3>
+            <h3>Dream Top Unicorn Breakouts</h3>
             <ul className="unicorn-list">
               {unicorns.map((u, index) => (
                 <li key={index} className="unicorn-item">

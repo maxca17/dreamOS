@@ -1,21 +1,31 @@
-.dashboard-sidebar {
-  width: 220px;
-  background: #4e2d8f;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
+body, ul, li, p {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif; /* Make sure this font is available */
 }
 
+/* Sidebar Container */
+.dashboard-sidebar {
+  width: 220px;
+  background: #f0f8ff; /* Crisp light blue (AliceBlue) background */
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #cbdce8; /* Subtle border */
+}
+
+/* Logo Section */
 .dashboard-logo {
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #3f2471;
-}
-
-.crown-icon {
-  font-size: 24px;
+  border-bottom: 1px solid #cbdce8;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  color: #333;
 }
 
 .sidebar-nav ul {
@@ -26,29 +36,50 @@
 
 .sidebar-nav li {
   padding: 15px 20px;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 15px;
-  color: #fff;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* Ensure links are white and not purple */
 .sidebar-nav li a {
-  color: #fff;
+  color: #333;
   text-decoration: none;
   display: block;
+  width: 100%;
+  font-weight: 500;
+}
+
+/* Hover State */
+.sidebar-nav li:hover {
+  background: #e8f2fc; /* Slightly deeper shade on hover */
+}
+
+/* Active State */
+.sidebar-nav li.active {
+  font-weight: 600;
+  position: relative;
+  background: #dceaf8; /* Slightly darker background to stand out */
+}
+
+/* Left border accent for active state */
+.sidebar-nav li.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: #4A90E2; /* Crisp blue accent line */
+}
+
+/* Active link text remains dark for legibility */
+.sidebar-nav li.active a {
+  color: #333;
 }
 
 .sidebar-nav li a:hover {
   text-decoration: none;
-  color: #fff;
-}
-
-.sidebar-nav li.active {
-  background: #3f2471;
-  font-weight: bold;
-  color: #fff;
-}
-
-.sidebar-nav li:hover {
-  background: #3f2471;
+  color: #333;
 }

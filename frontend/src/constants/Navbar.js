@@ -1,12 +1,12 @@
 import React from 'react';
-import '../css/constants/navbar.css';
 import { Link } from 'react-router-dom';
+import '../css/constants/navbar.css';
 
 const NavBar = () => {
   return (
     <aside className="dashboard-sidebar">
       <div className="dashboard-logo">
-        <div className="crown-icon">👑</div>
+        <div className="dream-logo">Dream Ventures</div>
       </div>
       <nav className="sidebar-nav">
         <ul>
@@ -19,9 +19,6 @@ const NavBar = () => {
           <li>
             <Link to="/people">People</Link>
           </li>
-          <li>Lists</li>
-          <li>Events</li>
-          <li>Scouts</li>
         </ul>
       </nav>
     </aside>

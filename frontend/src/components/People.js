@@ -11,24 +11,24 @@ function People() {
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const fetchPeople = async () => {
+    setLoading(true);
+    setError(null);
+
+    const { data, error } = await supabase
+      .from('people')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setPeople(data);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const fetchPeople = async () => {
-      setLoading(true);
-      setError(null);
-
-      const { data, error } = await supabase
-        .from('people')
-        .select('*')
-        .order('id', { ascending: true });
-
-      if (error) {
-        setError(error.message);
-      } else {
-        setPeople(data);
-      }
-      setLoading(false);
-    };
-
     fetchPeople();
   }, []);
 
@@ -38,8 +38,15 @@ function People() {
 
   const handleCloseModal = () => {
     setSelectedPerson(null);
+    fetchPeople(); // Refresh data after closing the modal
   };
 
+  const handleAddPerson = () => {
+    // Open the modal with an empty person object
+    setSelectedPerson({});
+  };
+
+  // eslint-disable-next-line
   const formatDate = (dateString) => {
     const options = { month: '2-digit', day: '2-digit', year: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -64,8 +71,9 @@ function People() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="people-search-input"
           />
-          <button className="people-add-button">Add Person</button>
+          <button className="people-add-button" onClick={handleAddPerson}>Add Person</button>
         </div>
+        <h1>Dream Network</h1>
 
         {loading && (
           <div className="people-status people-loading">Loading people...</div>
@@ -83,10 +91,13 @@ function People() {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Email</th>
                   <th>Title</th>
+                  <th>Type</th>
+                  <th>Sector</th>
+                  <th>Company</th>
+                  <th>Email</th>
+                  <th>City</th>
                   <th>LinkedIn</th>
-                  <th>Date Added</th>
                 </tr>
               </thead>
               <tbody>
@@ -97,8 +108,12 @@ function People() {
                     onClick={() => handlePersonClick(person)}
                   >
                     <td className="people-name">{person.name}</td>
-                    <td className="people-email">{person.email || 'N/A'}</td>
                     <td className="people-title">{person.title || 'N/A'}</td>
+                    <td className="people-type">{person.person_type || 'N/A'}</td>
+                    <td className="people-sector">{person.sector_focus || 'N/A'}</td>
+                    <td className="people-company">{person.company_name || 'N/A'}</td>
+                    <td className="people-email">{person.email || 'N/A'}</td>
+                    <td className="people-city">{person.city || 'N/A'}</td>
                     <td className="people-linkedin">
                       {person.linkedin ? (
                         <a href={person.linkedin} target="_blank" rel="noopener noreferrer">
@@ -108,7 +123,6 @@ function People() {
                         'N/A'
                       )}
                     </td>
-                    <td className="people-date-added">{person.created_at ? formatDate(person.created_at) : 'N/A'}</td>
                   </tr>
                 ))}
               </tbody>

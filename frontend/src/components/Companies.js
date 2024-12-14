@@ -1,100 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/components/companies.css';
 import NavBar from '../constants/Navbar';
+import { supabase } from '../supabaseClient';
 
 const Companies = () => {
-  const companies = [
-    { 
-      name: 'Rippling',
-      desc: 'Integrated platform to manage employee payroll, benefits, training, devices, and app permissions',
-      region: 'US',
-      industry: 'B2B / SaaS',
-      ranking: '1',
-      investmentDate: '3/28/2017',
-      valuation: '+5b',
-      logoColor: '#FFB84D'
-    },
-    {
-      name: 'Deel',
-      desc: 'Hiring, payroll & compliance platform for US & global teams',
-      region: 'US',
-      industry: 'B2B / SaaS',
-      ranking: '1',
-      investmentDate: '2/12/2019',
-      valuation: '+5b',
-      logoColor: '#000000'
-    },
-    {
-      name: 'Ramp',
-      desc: 'Corporate credit card that focuses on helping businesses eliminate overspend',
-      region: 'US',
-      industry: 'FinTech',
-      ranking: '1',
-      investmentDate: '4/7/2020',
-      valuation: '+5b',
-      logoColor: '#FFFF00'
-    },
-    {
-      name: 'Razorpay',
-      desc: 'Payment solution in India that allows businesses to accept, process and disburse online transactions',
-      region: 'India',
-      industry: 'FinTech',
-      ranking: '1',
-      investmentDate: '4/2/2015',
-      valuation: '+5b',
-      logoColor: '#007BFF'
-    },
-    {
-      name: 'Rappi',
-      desc: 'On demand delivery in Latin America.',
-      region: 'LatAm',
-      industry: 'Consumer',
-      ranking: '2',
-      investmentDate: '3/30/2016',
-      valuation: '+5b',
-      logoColor: '#FF6633'
-    },
-    {
-      name: 'Imbue',
-      desc: 'We build AI systems that can reason',
-      region: 'US',
-      industry: 'B2B / SaaS',
-      ranking: '1',
-      investmentDate: '8/12/2021',
-      valuation: '1-5b',
-      logoColor: '#FF8FB2'
-    },
-    {
-      name: 'Zepto',
-      desc: 'Indian Q-Commerce platform.',
-      region: 'India',
-      industry: 'Consumer',
-      ranking: '1',
-      investmentDate: '12/19/2021',
-      valuation: '1-5b',
-      logoColor: '#8F00FF'
-    },
-    {
-      name: 'Human Interest',
-      desc: '401(k) provider for SMBs',
-      region: 'US',
-      industry: 'B2B / SaaS',
-      ranking: '1',
-      investmentDate: '9/16/2015',
-      valuation: '1-5b',
-      logoColor: '#00DD99'
-    },
-    {
-      name: 'Jeeves',
-      desc: 'All-in-one financial stack for growing businesses globally',
-      region: 'LatAm',
-      industry: 'FinTech',
-      ranking: '1',
-      investmentDate: '2/27/2022',
-      valuation: '1-5b',
-      logoColor: '#FFC0CB'
+  const [companies, setCompanies] = useState([]);
+
+  const fetchCompanies = async () => {
+    const { data, error } = await supabase.from('companies').select('*');
+    if (error) {
+      console.error('Error fetching companies:', error);
+    } else {
+      setCompanies(data);
     }
-  ];
+  };
+
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
 
   return (
     <div className="companies-container">
@@ -126,7 +49,6 @@ const Companies = () => {
           <label><input type="checkbox" /> Social</label>
           <label><input type="checkbox" /> Ranking</label>
           <label><input type="checkbox" /> Announcements</label>
-          <a href="#" className="more-link">Show other activities</a>
         </div>
 
         <div className="filters-section">
@@ -171,38 +93,39 @@ const Companies = () => {
           </div>
 
           <div className="companies-table-container">
-            <div className="companies-table-header">
-              <div className="header-left">
-                <span>Company</span> <span className="count">({companies.length})</span>
-              </div>
-              <div className="header-right">
-                <span>Region</span>
-                <span>Industry</span>
-                <span>Ranking</span>
-                <span>Investment Date</span>
-                <span>Valuation</span>
-              </div>
-            </div>
-            <ul className="companies-list">
-              {companies.map((c, index) => (
-                <li key={index} className="company-row">
-                  <div className="company-info">
-                    <div className="company-logo" style={{ backgroundColor: c.logoColor }}></div>
-                    <div className="company-text">
-                      <strong>{c.name}</strong>
-                      <p>{c.desc}</p>
-                    </div>
-                  </div>
-                  <div className="company-meta">
-                    <span>{c.region}</span>
-                    <span>{c.industry}</span>
-                    <span>{c.ranking}</span>
-                    <span>{c.investmentDate}</span>
-                    <span>{c.valuation}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <table className="companies-table">
+              <thead>
+                <tr>
+                  <th className="col-company">Company ({companies.length})</th>
+                  <th className="col-poc">POC</th>
+                  <th className="col-website">Website</th>
+                  <th className="col-round">Round</th>
+                  <th className="col-sector">Sector</th>
+                </tr>
+              </thead>
+              <tbody>
+                {companies.map((c, index) => (
+                  <tr key={index} className="company-row">
+                    <td className="company-info-cell">
+                      <div className="company-info">
+                        <div 
+                          className="company-logo" 
+                          style={{ backgroundColor: c.logoColor || '#ccc' }}
+                        ></div>
+                        <div className="company-text">
+                          <strong>{c.company_name}</strong>
+                          <p>{c.description}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="company-meta-cell">{c.dream_poc || 'N/A'}</td>
+                    <td className="company-meta-cell">{c.company_website || 'N/A'}</td>
+                    <td className="company-meta-cell">{c.round || 'N/A'}</td>
+                    <td className="company-meta-cell">{c.sector || 'N/A'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
         </div>
