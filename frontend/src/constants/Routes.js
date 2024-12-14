@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../login';
 import Dashboard from '../components/Dashboard';
 import ProtectedRoute from './ProtectedRoute';
+import Companies from '../components/Companies';
 
 
 // Routes for Navbar
@@ -29,6 +30,14 @@ function AppRoutes({ user }) {
         element={
           <ProtectedRoute user={user}>
             <People user={user}/>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/companies"
+        element={
+          <ProtectedRoute user={user}>
+            <Companies user={user}/>
           </ProtectedRoute>
         }
       />

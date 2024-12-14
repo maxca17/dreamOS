@@ -1,30 +1,31 @@
-import React from 'react'
-import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+import React from 'react';
 import '../css/constants/navbar.css';
+import { Link } from 'react-router-dom';
 
-function Navbar() {
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
-  };
-
+const NavBar = () => {
   return (
-    <div className="navbar-container">
-      <div className="navbar-header">
-        <h1 className="navbar-title">Dream Ventures</h1>
+    <aside className="dashboard-sidebar">
+      <div className="dashboard-logo">
+        <div className="crown-icon">👑</div>
       </div>
-      <div className="navbar-divider"></div>
-      <nav className="navbar-links">
-        <Link className="navbar-link" to="/dashboard">Home</Link>
-        <Link className="navbar-link" to="/companies">Companies</Link>
-        <Link className="navbar-link" to="/people">People</Link>
+      <nav className="sidebar-nav">
+        <ul>
+          <li className="active">
+            <Link to="/dashboard">Home</Link>
+          </li>
+          <li>
+            <Link to="/companies">Companies</Link>
+          </li>
+          <li>
+            <Link to="/people">People</Link>
+          </li>
+          <li>Lists</li>
+          <li>Events</li>
+          <li>Scouts</li>
+        </ul>
       </nav>
-      <button className="navbar-logout-button" onClick={handleLogout}>Logout</button>
-    </div>
+    </aside>
   );
-}
+};
 
-export default Navbar;
+export default NavBar;

@@ -1,0 +1,90 @@
+.person-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.person-modal-container {
+  background: #ffffff;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2), 0 6px 6px rgba(0,0,0,0.1);
+  padding: 24px;
+  position: relative;
+  animation: fadeInScale 0.3s ease-in-out forwards;
+  font-family: 'Roboto', sans-serif;
+}
+
+.person-modal-name {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: #212121;
+  line-height: 1.2;
+}
+
+.person-modal-detail {
+  margin-bottom: 12px;
+  color: #424242;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.person-modal-detail:last-of-type {
+  margin-bottom: 24px;
+}
+
+.person-modal-label {
+  font-weight: 500;
+  margin-right: 8px;
+  color: #616161;
+}
+
+.person-modal-detail a {
+  color: #1976d2;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.person-modal-detail a:hover {
+  color: #1565c0;
+  text-decoration: underline;
+}
+
+.person-modal-close-button {
+  display: inline-block;
+  background-color: #1976d2;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.person-modal-close-button:hover {
+  background-color: #1565c0;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

@@ -1,0 +1,176 @@
+:root {
+    --font-family: "Helvetica Neue", Arial, sans-serif;
+    --text-color: #333;
+    --border-color: #ddd;
+    --background: #f9f9f9;
+    --content-bg: #fff;
+    --accent-color: #4e2d8f;
+    --font-size-base: 15px;
+    --spacing: 20px;
+  }
+  
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
+    background: var(--background);
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+  }
+  
+  .people-page-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  /* The NavBar is imported, so we just ensure the main content fills the rest */
+  .people-main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing);
+    background: var(--background);
+    overflow-y: auto;
+  }
+  
+  /* Title and Controls */
+  .people-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 var(--spacing) 0;
+  }
+  
+  .people-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    margin-bottom: var(--spacing);
+  }
+  
+  /* Search Input */
+  .people-search-input {
+    flex: 1;
+    height: 35px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+  
+  /* Add Person Button */
+  .people-add-button {
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .people-add-button:hover {
+    background: #3f2471;
+  }
+  
+  /* Status messages (Loading, Error, Empty) */
+  .people-status {
+    display: inline-block;
+    padding: var(--spacing);
+    border-radius: 4px;
+    background: var(--content-bg);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: var(--spacing);
+  }
+  
+  .people-error {
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+  }
+  
+  .people-empty {
+    color: #666;
+    text-align: center;
+  }
+  
+  /* Table Styles */
+  .people-table-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background: var(--content-bg);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .people-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .people-table th,
+  .people-table td {
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  
+  .people-table th {
+    font-weight: 600;
+    background: #fafafa;
+  }
+  
+  .people-list-item {
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .people-list-item:hover {
+    background: #f0f0f0;
+  }
+  
+  /* Subtle styling for table data */
+  .people-name {
+    font-weight: 500;
+  }
+  
+  .people-email {
+    color: #555;
+    font-style: italic;
+  }
+  
+  .people-linkedin a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .people-linkedin a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 600px) {
+    .people-title {
+      font-size: 1.5rem;
+    }
+  
+    .people-search-input {
+      font-size: 13px;
+    }
+  
+    .people-add-button {
+      font-size: 13px;
+      padding: 6px 10px;
+    }
+  
+    .people-table th,
+    .people-table td {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+    }
+  }
+  
