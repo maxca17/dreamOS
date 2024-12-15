@@ -192,7 +192,7 @@ const Dashboard = () => {
 
           <div className="sidebar-content">
             <div className="news-section">
-              <h4>Soma in the news</h4>
+              <h4>Dream Ventures in the news</h4>
               <ul className="news-list">
                 {news.map((n, idx) => (
                   <li key={idx}>

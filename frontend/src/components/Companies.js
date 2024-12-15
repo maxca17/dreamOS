@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import '../css/components/companies.css';
 import NavBar from '../constants/Navbar';
 import { supabase } from '../supabaseClient';
+import CompaniesModal from './CompaniesModal';
 
 const Companies = () => {
   const [companies, setCompanies] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(null);
 
   const fetchCompanies = async () => {
     const { data, error } = await supabase.from('companies').select('*');
@@ -18,6 +21,16 @@ const Companies = () => {
   useEffect(() => {
     fetchCompanies();
   }, []);
+
+  const handleOpenModal = (company) => {
+    setSelectedCompany(company);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedCompany(null);
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="companies-container">
@@ -105,7 +118,12 @@ const Companies = () => {
               </thead>
               <tbody>
                 {companies.map((c, index) => (
-                  <tr key={index} className="company-row">
+                  <tr 
+                    key={index} 
+                    className="company-row"
+                    onClick={() => handleOpenModal(c)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <td className="company-info-cell">
                       <div className="company-info">
                         <div 
@@ -127,6 +145,13 @@ const Companies = () => {
               </tbody>
             </table>
           </div>
+
+          {isModalOpen && selectedCompany && (
+            <CompaniesModal 
+              company={selectedCompany} 
+              onClose={handleCloseModal} 
+            />
+          )}
 
         </div>
       </div>

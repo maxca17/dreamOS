@@ -70,7 +70,7 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
               />
             </div>
 
-            <div className="person-modal-field">
+            <div className="person-modal-field-dropdown">
               <label>Stage</label>
               <select
                 value={person.stage ? person.stage[0] : ''}
@@ -167,7 +167,7 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
               />
             </div>
 
-            <div className="person-modal-field">
+            <div className="person-modal-field-dropdown">
               <label>Check Size Range</label>
               <select
                 value={person.check_size_range || ''}

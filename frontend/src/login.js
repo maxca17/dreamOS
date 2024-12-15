@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { supabase } from './supabaseClient';
 import './css/login.css';
+import logo from './dreamLogo.png'
 
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -34,6 +35,9 @@ function Login() {
 
   return (
     <div className="login-container">
+      <div className="login-Logo"><img src={logo} alt="Dream Ventures" /></div>
+      <h1 className="login-header">Dream Ventures</h1>
+      <h2 className="login-subheader">Sign in to your account</h2>
       <h1 className="login-heading">{isSignUp ? 'Sign Up' : 'Login'}</h1>
       <input
         className="login-input"
