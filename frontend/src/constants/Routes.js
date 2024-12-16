@@ -5,22 +5,26 @@ import Login from '../login';
 import Dashboard from '../components/Dashboard';
 import ProtectedRoute from './ProtectedRoute';
 import Companies from '../components/Companies';
+import People from '../components/People';
+import PortfolioCompanies from '../components/PortfolioCompanies';
 
-
-// Routes for Navbar
-import People from '../components/People'
-
-function AppRoutes({ user }) {
+function AppRoutes({ user, loading }) {
   return (
     <Routes>
       <Route
         path="/"
-        element={user ? <Navigate to="/dashboard" replace /> : <Login />}
+        element={
+          // If loading, don’t decide yet; you might show a loading screen here.
+          // Once loading is false:
+          user 
+            ? <Navigate to="/dashboard" replace />
+            : (loading ? <div>Loading...</div> : <Login />)
+        }
       />
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute user={user}>
+          <ProtectedRoute user={user} loading={loading}>
             <Dashboard user={user} />
           </ProtectedRoute>
         }
@@ -28,16 +32,24 @@ function AppRoutes({ user }) {
       <Route
         path="/people"
         element={
-          <ProtectedRoute user={user}>
-            <People user={user}/>
+          <ProtectedRoute user={user} loading={loading}>
+            <People user={user} />
           </ProtectedRoute>
         }
       />
       <Route
         path="/companies"
         element={
-          <ProtectedRoute user={user}>
-            <Companies user={user}/>
+          <ProtectedRoute user={user} loading={loading}>
+            <Companies user={user} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portfoliocompanies"
+        element={
+          <ProtectedRoute user={user} loading={loading}>
+            <PortfolioCompanies user={user} />
           </ProtectedRoute>
         }
       />

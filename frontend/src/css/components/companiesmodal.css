@@ -1,0 +1,245 @@
+.companies-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  animation: fadeIn 0.2s forwards ease-in-out;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.companies-modal-content {
+  background: #ffffff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1200px;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  animation: scaleUp 0.2s ease-in-out forwards;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.companies-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.15s ease;
+}
+
+.companies-modal-close:hover {
+  color: #333;
+}
+
+.companies-modal-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}
+
+.companies-modal-left {
+  flex: 2;
+}
+
+.companies-modal-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.company-info-card {
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.company-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.company-info-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.pdf-button {
+  background: #FBE9F2;
+  color: #D6458C;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.pdf-button:hover {
+  background: #f6d9e6;
+}
+
+.company-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+.info-value a {
+  color: #0073e6;
+  text-decoration: none;
+}
+.info-value a:hover {
+  text-decoration: underline;
+}
+
+.overview-full {
+  grid-column: 1 / 3;
+}
+
+/* Right Column Cards */
+.side-card {
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.side-card h4 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.founders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.founder-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.founder-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ccc;
+}
+
+.founder-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.founder-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.docs-list, .news-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.docs-list li, .news-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.docs-list li a, .news-list li a {
+  color: #0073e6;
+  text-decoration: none;
+  font-size: 0.95rem;
+  flex: 1;
+  margin-right: 8px;
+}
+.docs-list li a:hover, .news-list li a:hover {
+  text-decoration: underline;
+}
+
+.doc-date, .news-date {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .companies-modal-grid {
+    flex-direction: column;
+  }
+
+  .overview-full {
+    grid-column: 1 / 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .company-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-full {
+    grid-column: 1 / 2;
+  }
+}

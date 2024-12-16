@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { supabase } from './supabaseClient';
 import './css/login.css';
-import logo from './dreamLogo.png'
+import logo from './dreamLogo.png';
 
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);

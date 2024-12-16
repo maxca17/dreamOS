@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../css/components/companies.css';
 import NavBar from '../constants/Navbar';
 import { supabase } from '../supabaseClient';
-import CompaniesModal from './CompaniesModal';
+import PortfolioCompaniesModal from './PortfolioCompaniesModal';
 
 const Companies = (user) => {
   const [companies, setCompanies] = useState([]);
@@ -10,7 +10,7 @@ const Companies = (user) => {
   const [selectedCompany, setSelectedCompany] = useState(null);
 
   const fetchCompanies = async () => {
-    const { data, error } = await supabase.from('companies').select('*');
+    const { data, error } = await supabase.from('companies').select('*').eq('status', 'Portfolio Company');
     if (error) {
       console.error('Error fetching companies:', error);
     } else {
@@ -39,34 +39,30 @@ const Companies = (user) => {
 
       <aside className="filters-sidebar">
         <div className="filters-section">
-          <h4>Company Type</h4>
-          <label><input type="checkbox" defaultChecked /> Portfolio</label>
-          <label><input type="checkbox" /> Prospect</label>
-          <label><input type="checkbox" /> Network</label>
+          <h4>Company Status</h4>
+          <label><input type="checkbox" /> All</label>
+          <label><input type="checkbox" defaultChecked /> Active</label>
+          <label><input type="checkbox" /> Dead</label>
         </div>
 
         <div className="filters-section">
-          <h4>Ranking</h4>
+          <h4>Fund</h4>
           <label><input type="checkbox" defaultChecked /> All</label>
-          <label><input type="checkbox" /> Live Co-Invest</label>
           <label><input type="checkbox" /> 1</label>
           <label><input type="checkbox" /> 2</label>
-          <label><input type="checkbox" /> 3</label>
         </div>
 
         <div className="filters-section">
-          <h4>Activities</h4>
-          <label><input type="checkbox" /> Top Activities</label>
-          <label><input type="checkbox" /> Video Calls</label>
-          <label><input type="checkbox" /> News</label>
-          <label><input type="checkbox" /> Founder Monthly Email</label>
-          <label><input type="checkbox" /> Social</label>
-          <label><input type="checkbox" /> Ranking</label>
-          <label><input type="checkbox" /> Announcements</label>
+          <h4>Sector</h4>
+          <label><input type="checkbox" defaultChecked /> All</label>
+          <label><input type="checkbox" /> B2B / SaaS</label>
+          <label><input type="checkbox" /> AI</label>
+          <label><input type="checkbox" /> FinTech</label>
+          <label><input type="checkbox" /> FrontierTech</label>
         </div>
 
         <div className="filters-section">
-          <h4>Valuation</h4>
+          <h4>Check Size</h4>
           <label><input type="checkbox" defaultChecked /> All</label>
           <label><input type="checkbox" /> +5b</label>
           <label><input type="checkbox" /> 1-5b</label>
@@ -148,7 +144,7 @@ const Companies = (user) => {
           </div>
 
           {isModalOpen && selectedCompany && (
-            <CompaniesModal 
+            <PortfolioCompaniesModal 
               company={selectedCompany} 
               onClose={handleCloseModal} 
             />
