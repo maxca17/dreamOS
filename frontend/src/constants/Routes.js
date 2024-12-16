@@ -7,6 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Companies from '../components/Companies';
 import People from '../components/People';
 import PortfolioCompanies from '../components/PortfolioCompanies';
+import PortfolioStats from '../components/PortfolioStats';
 
 function AppRoutes({ user, loading }) {
   return (
@@ -50,6 +51,14 @@ function AppRoutes({ user, loading }) {
         element={
           <ProtectedRoute user={user} loading={loading}>
             <PortfolioCompanies user={user} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portfoliostats"
+        element={
+          <ProtectedRoute user={user} loading={loading}>
+            <PortfolioStats user={user} />
           </ProtectedRoute>
         }
       />

@@ -42,6 +42,41 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
     }
   };
 
+  function formatPhoneNumber(value) {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length === 0) {
+      return '';
+    }
+
+    let formatted = '';
+    const isUSCountryCode = cleaned[0] === '1';
+
+    if (isUSCountryCode) {
+      // Format: +1 (XXX) XXX-XXXX
+      formatted = '+1';
+      if (cleaned.length > 1) {
+        formatted += ' (' + cleaned.slice(1, Math.min(4, cleaned.length));
+      }
+      if (cleaned.length >= 4) {
+        formatted += ') ' + cleaned.slice(4, Math.min(7, cleaned.length));
+      }
+      if (cleaned.length >= 7) {
+        formatted += '-' + cleaned.slice(7, 11);
+      }
+    } else {
+      // Format: (XXX) XXX-XXXX
+      formatted = '(' + cleaned.slice(0, Math.min(3, cleaned.length));
+      if (cleaned.length > 3) {
+        formatted += ') ' + cleaned.slice(3, Math.min(6, cleaned.length));
+      }
+      if (cleaned.length > 6) {
+        formatted += '-' + cleaned.slice(6, 10);
+      }
+    }
+
+    return formatted;
+  }
+
   return (
     <div className="person-modal-overlay" onClick={onClose}>
       <div className="person-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -179,6 +214,17 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                     onChange={(e) => handleChange('linkedin', e.target.value)}
                   />
                 </div>
+                <div className="info-item">
+                  <span className="info-label">Phone Number</span>
+                  <input
+                    type="text"
+                    value={person.phone_number || ''}
+                    onChange={(e) => {
+                      const formatted = formatPhoneNumber(e.target.value);
+                      handleChange('phone_number', formatted);
+                    }}
+                  />
+                </div>
                 <div className="info-item info-notes-full">
                   <span className="info-label">Notes</span>
                   <textarea
@@ -225,7 +271,6 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                   LinkedIn: <a href={person.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
                 </p>
               )}
-              
             </div>
           </div>
         </div>

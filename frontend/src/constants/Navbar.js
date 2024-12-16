@@ -22,6 +22,9 @@ const NavBar = () => {
           <li>
             <Link to="/portfoliocompanies">Portfolio Companies</Link>
           </li>
+          <li>
+            <Link to="/portfoliostats">Portfolio Stats</Link>
+          </li>
         </ul>
       </nav>
     </aside>

@@ -8,16 +8,16 @@ const Companies = (user) => {
   const [companies, setCompanies] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchCompanies = async () => {
-    const { data, error } = await supabase.from('companies').select('*');
+    const { data, error } = await supabase.from('companies').select('*').order('company_name', { ascending: true });
     if (error) {
       console.error('Error fetching companies:', error);
     } else {
       setCompanies(data);
     }
   };
-
 
   useEffect(() => {
     fetchCompanies();
@@ -32,6 +32,14 @@ const Companies = (user) => {
     setSelectedCompany(null);
     setIsModalOpen(false);
   };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredCompanies = companies.filter((company) =>
+    company.company_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="companies-container">
@@ -98,6 +106,8 @@ const Companies = (user) => {
               type="text" 
               placeholder="Search for companies" 
               className="search-companies" 
+              value={searchTerm}
+              onChange={handleSearchChange}
             />
             <button className="tag-filter">Portfolio</button>
 
@@ -110,7 +120,7 @@ const Companies = (user) => {
             <table className="companies-table">
               <thead>
                 <tr>
-                  <th className="col-company">Company ({companies.length})</th>
+                  <th className="col-company">Company ({filteredCompanies.length})</th>
                   <th className="col-poc">POC</th>
                   <th className="col-website">Website</th>
                   <th className="col-round">Round</th>
@@ -118,7 +128,7 @@ const Companies = (user) => {
                 </tr>
               </thead>
               <tbody>
-                {companies.map((c, index) => (
+                {filteredCompanies.map((c, index) => (
                   <tr 
                     key={index} 
                     className="company-row"

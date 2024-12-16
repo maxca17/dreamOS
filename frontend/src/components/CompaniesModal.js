@@ -9,7 +9,7 @@ const CompaniesModal = ({ company, onClose }) => {
     const { data: companyData, error } = await supabase
       .from('companies')
       .select('*')
-      .eq('company_name', company.company_name);
+      .eq('company_name', company.company_name)
 
     if (error) {
       console.error('Error fetching data:', error);
@@ -71,7 +71,7 @@ const CompaniesModal = ({ company, onClose }) => {
                 </div>
 
                 <div className="info-item">
-                  <span className="info-label">Valuation</span>
+                  <span className="info-label">Current Valuation</span>
                   <span className="info-value">{data?.valuation || "+5b Series D"}</span>
                 </div>
                 <div className="info-item">
@@ -96,15 +96,11 @@ const CompaniesModal = ({ company, onClose }) => {
                 </div>
                 <div className="info-item">
                   <span className="info-label">Primary Sector</span>
-                  <span className="info-value">{data?.primary_sector || "B2B / SaaS"}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Other Sector</span>
-                  <span className="info-value">{data?.other_sector || "Female Founders, FinTech, DevTools"}</span>
+                  <span className="info-value">{data?.sector || "N/A"}</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">One Liner</span>
-                  <span className="info-value">{data?.one_liner || "hiring, payroll & compliance platform for US & global teams"}</span>
+                  <span className="info-value">{data?.one_liner || ""}</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">Fund</span>
@@ -112,57 +108,38 @@ const CompaniesModal = ({ company, onClose }) => {
                 </div>
                 <div className="info-item">
                   <span className="info-label">Other Investors</span>
-                  <span className="info-value">{data?.other_investors || "Spark Capital, a16z, YC Continuity, ESAS Ventures"}</span>
+                  <span className="info-value">{data?.other_investors || "None"}</span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">YC Class</span>
-                  <span className="info-value">{data?.yc_class || "W19"}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Investment Evaluation (estimated)</span>
-                  <span className="info-value">{data?.investment_evaluation || "1598"}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Soma ranking</span>
-                  <span className="info-value">{data?.soma_ranking || "1"}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Founder Linkedins</span>
-                  <span className="info-value">
-                    <a href="https://www.linkedin.com/in/alexbouaziz/" target="_blank" rel="noopener noreferrer">Alex Bouaziz</a> / 
-                    <a href="https://www.linkedin.com/in/shuo-wang-848a/" target="_blank" rel="noopener noreferrer"> Shuo Wang</a>
-                  </span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Entry Cost</span>
-                  <span className="info-value">{data?.entry_cost || "$250K"}</span>
+                  <span className="info-label">Stage</span>
+                  <span className="info-value">{data?.stage || "Series D"}</span>
                 </div>
                 <div className="info-item overview-full">
                   <span className="info-label">Overview</span>
                   <span className="info-value">
                     {data?.overview ||
-                      "Deel is every business' wish come true for onboarding and training the 20 million international contractors who work with US companies. By handling all contracts, payments, and taxes in one interface, Deel eliminates paperwork and frees up time for businesses to focus on their most pressing needs."}
+                      "Add Overview Here"}
                   </span>
                 </div>
                 <div className="info-item overview-full">
                   <span className="info-label">Recent founder update summary (06/18/2024)</span>
                   <span className="info-value">
                     {data?.recent_update ||
-                      "Deel has launched Deel AI to its 25,000+ customers, enhancing global HR capabilities with data-driven insights and compliance information. Following the acquisition of Zavvy, Deel has integrated and launched it as Deel Engage, a comprehensive talent development product."}
+                      "Add Updates Here"}
                   </span>
                 </div>
                 <div className="info-item overview-full">
                   <span className="info-label">Wins</span>
                   <span className="info-value">
                     {data?.wins ||
-                      "• Launch of Deel AI to 25,000+ customers.  \n• Integration and Launch of Zavvy acquisition as Deel Engage."}
+                      "Add Wins Here"}
                   </span>
                 </div>
                 <div className="info-item overview-full">
                   <span className="info-label">Asks</span>
                   <span className="info-value">
                     {data?.asks ||
-                      "Looking for introductions to HR and payroll queries experts, and exploring partnerships in new markets."}
+                      "Add Asks Here"}
                   </span>
                 </div>
               </div>
@@ -199,15 +176,14 @@ const CompaniesModal = ({ company, onClose }) => {
             </div>
 
             <div className="side-card">
-              <h4>Recent News</h4>
-              <ul className="news-list">
-                {recentNews.map((n, idx) => (
-                  <li key={idx}>
-                    <a href={n.link}>{n.title}</a>
-                    <span className="news-date">{n.date}</span>
-                  </li>
-                ))}
-              </ul>
+              <h4>Investor Updates</h4> {/* TODO: Add investor updates modal */}
+            </div>
+
+
+
+
+            <div className="side-card">
+              <h4>Equity Entry Ops</h4> {/* TODO: Add entry setion popup modal  */}
             </div>
           </div>
         </div>
