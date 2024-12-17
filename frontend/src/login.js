@@ -35,7 +35,7 @@ function Login() {
 
   return (
     <div className="login-container">
-      <div className="login-Logo"><img src={logo} alt="Dream Ventures" /></div>
+      {/* <div className="login-Logo"><img src={logo} alt="Dream Ventures" /></div> */}
       <h1 className="login-header">Dream Ventures</h1>
       <h2 className="login-subheader">Sign in to your account</h2>
       <h1 className="login-heading">{isSignUp ? 'Sign Up' : 'Login'}</h1>

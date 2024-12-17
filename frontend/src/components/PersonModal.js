@@ -271,6 +271,7 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                   LinkedIn: <a href={person.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
                 </p>
               )}
+              <p>Phone: {person.phone_number || 'N/A'}</p>
             </div>
           </div>
         </div>

@@ -1,22 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../css/components/companiesmodal.css';
-import { supabase } from '../supabaseClient'
+import { supabase } from '../supabaseClient';
+import DecksAndMemosModal from './DecksAndMemosModal';
 
 const CompaniesModal = ({ company, onClose }) => {
   const [data, setData] = useState(company);
   const [tempData, setTempData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
+  const [showDecksModal, setShowDecksModal] = useState(false);
 
   const fetchData = useCallback(async () => {
     const { data: companyData, error } = await supabase
       .from('companies')
       .select('*')
       .eq('company_name', company.company_name)
+      .single();
 
     if (error) {
       console.error('Error fetching data:', error);
-    } else if (companyData && companyData.length > 0) {
-      setData(companyData[0]);
+    } else if (companyData) {
+      setData(companyData);
     }
   }, [company.company_name]);
 
@@ -37,7 +40,6 @@ const CompaniesModal = ({ company, onClose }) => {
   };
 
   const handleSave = async () => {
-    // Update the database with tempData
     const { error } = await supabase
       .from('companies')
       .update({
@@ -64,6 +66,8 @@ const CompaniesModal = ({ company, onClose }) => {
     } else {
       setData(tempData);
       setIsEditing(false);
+      // Re-fetch data to ensure we have the latest from DB
+      fetchData();
     }
   };
 
@@ -85,11 +89,6 @@ const CompaniesModal = ({ company, onClose }) => {
       img: "https://placehold.co/50x50?text=SW",
       icon: "https://placehold.co/16x16?text=IN"
     }
-  ];
-
-  const decksAndMemos = [
-    { title: "Deel - one pager.pdf", date: "05/26/2023", link: "#" },
-    { title: "Deel Notes.pdf", date: "05/26/2023", link: "#" }
   ];
 
   return (
@@ -132,14 +131,16 @@ const CompaniesModal = ({ company, onClose }) => {
                     <input
                       value={tempData?.valuation || ""}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal point
+                        const value = e.target.value.replace(/[^0-9.]/g, '');
                         handleChange('valuation', value);
                       }}
                       placeholder="$0.00"
                     />
                   ) : (
                     <span className="info-value">
-                      {data?.valuation ? `$${parseFloat(data.valuation).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}` : "N/A"}
+                      {data?.valuation
+                        ? `$${parseFloat(data.valuation).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+                        : "N/A"}
                     </span>
                   )}
                 </div>
@@ -191,8 +192,6 @@ const CompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">{data?.city || "N/A"}</span>
                   )}
                 </div>
-
-
 
                 <div className="info-item">
                   <span className="info-label">Status</span>
@@ -257,6 +256,18 @@ const CompaniesModal = ({ company, onClose }) => {
                   )}
                 </div>
                 <div className="info-item">
+                  <span className="info-label">Who Referred?</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.who_referred || ""}
+                      onChange={(e) => handleChange('who_referred', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">{data?.who_referred || "None"}</span>
+                  )}
+                </div>
+
+                <div className="info-item">
                   <span className="info-label">Stage</span>
                   {isEditing ? (
                     <select
@@ -297,7 +308,6 @@ const CompaniesModal = ({ company, onClose }) => {
                       value={tempData?.recent_update || ""}
                       onChange={(e) => {
                         handleChange('recent_update', e.target.value);
-                        // Update the date when the recent update is changed
                         setTempData((prev) => ({ ...prev, recent_update_date: new Date().toLocaleDateString() }));
                       }}
                     />
@@ -347,7 +357,9 @@ const CompaniesModal = ({ company, onClose }) => {
                     <img src={f.img} alt={f.name} className="founder-img"/>
                     <div className="founder-info">
                       <div className="founder-name">{f.name}</div>
-                      <a href={f.linkedIn} target="_blank" rel="noopener noreferrer"><img src={f.icon} alt="LinkedIn" /></a>
+                      <a href={f.linkedIn} target="_blank" rel="noopener noreferrer">
+                        <img src={f.icon} alt="LinkedIn" />
+                      </a>
                     </div>
                   </div>
                 ))}
@@ -355,15 +367,32 @@ const CompaniesModal = ({ company, onClose }) => {
             </div>
 
             <div className="side-card">
-              <h4>Decks and Memos</h4>
-              <ul className="docs-list">
-                {decksAndMemos.map((d, i) => (
-                  <li key={i}>
-                    <a href={d.link}>{d.title}</a>
-                    <span className="doc-date">{d.date}</span>
-                  </li>
-                ))}
-              </ul>
+              <h4>
+                Decks and Memos
+                <button
+                  className="expand-button"
+                  style={{ float: 'right', background: 'none', border: 'none', cursor: 'pointer' }}
+                  onClick={() => setShowDecksModal(true)}
+                >
+                  &#x25B6;
+                </button>
+              </h4>
+              {/* If you want to show an initial list from `data.files`,
+                  you can map over data.files here if it exists. */}
+              {data?.files && data.files.length > 0 ? (
+                <ul className="docs-list">
+                  {data.files.map((file, i) => (
+                    <li key={i}>
+                      <a href={file.file_url} target="_blank" rel="noopener noreferrer">{file.file_name}</a>
+                      <span className="doc-date">
+                        {new Date(file.upload_date).toLocaleDateString()}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No files uploaded yet.</p>
+              )}
             </div>
 
             <div className="side-card">
@@ -371,12 +400,22 @@ const CompaniesModal = ({ company, onClose }) => {
             </div>
 
             <div className="side-card">
-              <h4>Equity Entry Ops</h4> {/* TODO: Add entry setion popup modal  */}
+              <h4>Equity Entry Ops</h4> {/* TODO: Add entry section popup modal */}
             </div>
           </div>
         </div>
-
       </div>
+
+      {showDecksModal && (
+        <DecksAndMemosModal
+          companyName={data.company_name}
+          onClose={() => {
+            setShowDecksModal(false);
+            // After closing the modal, re-fetch to get updated files
+            fetchData();
+          }}
+        />
+      )}
     </div>
   );
 };

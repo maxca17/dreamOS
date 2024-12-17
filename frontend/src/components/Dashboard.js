@@ -16,7 +16,6 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserId = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
-      console.log(user);
       if (error) {
         console.error('Error fetching user ID:', error);
       } else {
