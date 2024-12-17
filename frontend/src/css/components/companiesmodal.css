@@ -146,6 +146,36 @@
   grid-column: 1 / 3;
 }
 
+/* Editable fields styling */
+.info-item input[type="text"],
+.info-item input[type="url"],
+.info-item textarea {
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #333;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  resize: vertical;
+}
+
+.info-item input[type="text"]:focus,
+.info-item input[type="url"]:focus,
+.info-item textarea:focus {
+  outline: none;
+  border-color: #0073e6;
+  background: #fff;
+}
+
+/* Add some spacing around buttons in edit mode */
+.company-info-header .pdf-button:not(:last-child) {
+  margin-right: 8px;
+}
+
 /* Right Column Cards */
 .side-card {
   background: #fff;

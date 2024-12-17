@@ -4,13 +4,61 @@ import NavBar from '../constants/Navbar';
 import { supabase } from '../supabaseClient';
 
 const Dashboard = () => {
+  const [loginName, setLoginName] = useState('');
   const [portfolioCompaniestotal, setPortfolioCompaniestotal] = useState([]);
   const [activeCompanies, setActiveCompanies] = useState(0);
   const [exits, setExits] = useState(0);
   const [totalOutofBusiness, setTotalOutofBusiness] = useState(0);
+  const [userId, setUserId] = useState(null);
 
 
 
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      console.log(user);
+      if (error) {
+        console.error('Error fetching user ID:', error);
+      } else {
+        setUserId(user.id);
+      }
+    };
+
+    fetchUserId();
+  }, [userId]);
+  var user_id = userId;
+  console.log(user_id);
+
+  const fetchLoginName = async () => {
+    if (!userId) return; // Ensure userId is available before fetching
+    const { data, error } = await supabase
+    .from('profiles')
+    .select('display_name')
+    .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error fetching login name:', error.message); // Log only the error message
+    } else if (data.length > 0) {
+      setLoginName(data[0].display_name);
+    } else {
+      console.warn('No login name found for user ID:', userId);
+    }
+  };
+
+  useEffect(() => {
+    fetchLoginName();
+  }, [userId]); // Add userId as a dependency to re-fetch when it changes
+
+  var loginName1 = loginName;
+  console.log(loginName1);
+
+
+
+
+
+
+
+  
   const fetchTotalOutofBusiness = async () => {
     const { data, error } = await supabase.from('companies').select('*').eq('out_of_business', true);
     if (error) {
@@ -28,6 +76,15 @@ const Dashboard = () => {
       setExits(data.length);
     }
   };
+
+
+
+
+
+
+
+
+
 
   const fetchActiveCompanies = async () => {
     const { data, error } = await supabase.from('companies').select('*').eq('active', true);
@@ -129,7 +186,7 @@ const Dashboard = () => {
       <div className="main-content">
         <div className="welcome-section">
           <div className="welcome-text">
-            <h2>Welcome back, Aryan Bhatnagar</h2>
+            <h2>Welcome back, {loginName1}</h2>
             <p>To the Dream Ventures Platform</p>
           </div>
           <div className="metrics">

@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import '../css/components/companiesmodal.css';
 import { supabase } from '../supabaseClient'
 
 const CompaniesModal = ({ company, onClose }) => {
   const [data, setData] = useState(company);
+  const [tempData, setTempData] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const { data: companyData, error } = await supabase
       .from('companies')
       .select('*')
@@ -16,13 +18,58 @@ const CompaniesModal = ({ company, onClose }) => {
     } else if (companyData && companyData.length > 0) {
       setData(companyData[0]);
     }
-  };
+  }, [company.company_name]);
 
   useEffect(() => {
     if (company && company.company_name) {
       fetchData();
     }
-  }, [company]);
+  }, [company, fetchData]);
+
+  const handleEdit = () => {
+    setTempData(data);
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setTempData(data);
+    setIsEditing(false);
+  };
+
+  const handleSave = async () => {
+    // Update the database with tempData
+    const { error } = await supabase
+      .from('companies')
+      .update({
+        company_name: tempData.company_name,
+        valuation: tempData.valuation,
+        revenue: tempData.revenue,
+        region: tempData.region,
+        company_website: tempData.company_website,
+        city: tempData.city,
+        sector: tempData.sector,
+        one_liner: tempData.one_liner,
+        fund: tempData.fund,
+        other_investors: tempData.other_investors,
+        stage: tempData.stage,
+        overview: tempData.overview,
+        recent_update: tempData.recent_update,
+        wins: tempData.wins,
+        asks: tempData.asks
+      })
+      .eq('company_name', data.company_name);
+
+    if (error) {
+      console.error('Error updating data:', error);
+    } else {
+      setData(tempData);
+      setIsEditing(false);
+    }
+  };
+
+  const handleChange = (field, value) => {
+    setTempData((prev) => ({ ...prev, [field]: value }));
+  };
 
   // Hardcoded data for demonstration
   const founders = [
@@ -45,12 +92,6 @@ const CompaniesModal = ({ company, onClose }) => {
     { title: "Deel Notes.pdf", date: "05/26/2023", link: "#" }
   ];
 
-  const recentNews = [
-    { title: "Have the rules of etiquette changed in today's world of work?", date: "11/27/2024", link: "#" },
-    { title: "Deel Expands Immigration Support To Everyone, Streamlining Global Visa Applications", date: "10/23/2024", link: "#" },
-    { title: "Deel Expands Immigration Support To Everyone, Streamlining Global Visa Applications", date: "10/22/2024", link: "#" }
-  ];
-
   return (
     <div className="companies-modal-overlay">
       <div className="companies-modal-content">
@@ -62,85 +103,235 @@ const CompaniesModal = ({ company, onClose }) => {
             <div className="company-info-card">
               <div className="company-info-header">
                 <h3>Company Information</h3>
-                <button className="pdf-button">Edit</button>
+                {!isEditing && (
+                  <button className="pdf-button" onClick={handleEdit}>Edit</button>
+                )}
+                {isEditing && (
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <button className="pdf-button" onClick={handleSave}>Save</button>
+                    <button className="pdf-button" onClick={handleCancel}>Cancel</button>
+                  </div>
+                )}
               </div>
               <div className="company-info-grid">
-              <div className="info-item">
+                <div className="info-item">
                   <span className="info-label">Company Name</span>
-                  <span className="info-value">{data?.company_name || "Deel"}</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.company_name || ""}
+                      onChange={(e) => handleChange('company_name', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">{data?.company_name || "Deel"}</span>
+                  )}
                 </div>
 
                 <div className="info-item">
                   <span className="info-label">Current Valuation</span>
-                  <span className="info-value">{data?.valuation || "+5b Series D"}</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.valuation || ""}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal point
+                        handleChange('valuation', value);
+                      }}
+                      placeholder="$0.00"
+                    />
+                  ) : (
+                    <span className="info-value">
+                      {data?.valuation ? `$${parseFloat(data.valuation).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}` : "N/A"}
+                    </span>
+                  )}
                 </div>
                 <div className="info-item">
                   <span className="info-label">Revenue</span>
-                  <span className="info-value">{data?.revenue || "N/A"}</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.revenue || ""}
+                      onChange={(e) => handleChange('revenue', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">{data?.revenue || "N/A"}</span>
+                  )}
                 </div>
                 <div className="info-item">
                   <span className="info-label">Region</span>
-                  <span className="info-value">{data?.region || "N/A"}</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.region || ""}
+                      onChange={(e) => handleChange('region', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">{data?.region || "N/A"}</span>
+                  )}
                 </div>
                 <div className="info-item">
                   <span className="info-label">Website</span>
-                  <span className="info-value">
-                    <a href={data?.company_website || "N/A"} target="_blank" rel="noopener noreferrer">
-                      {data?.company_website || "N/A"}
-                    </a>
-                  </span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.company_website || ""}
+                      onChange={(e) => handleChange('company_website', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">
+                      <a href={data?.company_website || "#"} target="_blank" rel="noopener noreferrer">
+                        {data?.company_website || "N/A"}
+                      </a>
+                    </span>
+                  )}
                 </div>
                 <div className="info-item">
                   <span className="info-label">City</span>
-                  <span className="info-value">{data?.city || "N/A"}</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.city || ""}
+                      onChange={(e) => handleChange('city', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">{data?.city || "N/A"}</span>
+                  )}
                 </div>
+
+
+
+                <div className="info-item">
+                  <span className="info-label">Status</span>
+                  {isEditing ? (
+                    <select
+                      value={tempData?.status || ""}
+                      onChange={(e) => handleChange('status', e.target.value)}
+                    >
+                      <option value="">Select Status</option>
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Closed">Portfolio Company</option>
+                    </select>
+                  ) : (
+                    <span className="info-value">{data?.status || "N/A"}</span>
+                  )}
+                </div>
+
                 <div className="info-item">
                   <span className="info-label">Primary Sector</span>
-                  <span className="info-value">{data?.sector || "N/A"}</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.sector || ""}
+                      onChange={(e) => handleChange('sector', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">{data?.sector || "N/A"}</span>
+                  )}
                 </div>
                 <div className="info-item">
                   <span className="info-label">One Liner</span>
-                  <span className="info-value">{data?.one_liner || ""}</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.one_liner || ""}
+                      onChange={(e) => handleChange('one_liner', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">{data?.one_liner || ""}</span>
+                  )}
                 </div>
                 <div className="info-item">
                   <span className="info-label">Fund</span>
-                  <span className="info-value">{data?.fund || "Fund II"}</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.fund || ""}
+                      onChange={(e) => handleChange('fund', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">{data?.fund || "Fund II"}</span>
+                  )}
                 </div>
                 <div className="info-item">
                   <span className="info-label">Other Investors</span>
-                  <span className="info-value">{data?.other_investors || "None"}</span>
+                  {isEditing ? (
+                    <input
+                      value={tempData?.other_investors || ""}
+                      onChange={(e) => handleChange('other_investors', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">{data?.other_investors || "None"}</span>
+                  )}
                 </div>
                 <div className="info-item">
                   <span className="info-label">Stage</span>
-                  <span className="info-value">{data?.stage || "Series D"}</span>
+                  {isEditing ? (
+                    <select
+                      value={tempData?.stage || ""}
+                      onChange={(e) => handleChange('stage', e.target.value)}
+                    >
+                      <option value="">Select Stage</option>
+                      <option value="Pre-seed">Pre-seed</option>
+                      <option value="Seed">Seed</option>
+                      <option value="Series A">Series A</option>
+                      <option value="Series B">Series B</option>
+                      <option value="Series C">Series C</option>
+                      <option value="Series D">Series D</option>
+                      <option value="Series E">Series E</option>
+                      <option value="IPO">IPO</option>
+                    </select>
+                  ) : (
+                    <span className="info-value">{data?.stage || "Series D"}</span>
+                  )}
                 </div>
                 <div className="info-item overview-full">
                   <span className="info-label">Overview</span>
-                  <span className="info-value">
-                    {data?.overview ||
-                      "Add Overview Here"}
-                  </span>
+                  {isEditing ? (
+                    <textarea
+                      value={tempData?.overview || ""}
+                      onChange={(e) => handleChange('overview', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">
+                      {data?.overview || "Add Overview Here"}
+                    </span>
+                  )}
                 </div>
                 <div className="info-item overview-full">
-                  <span className="info-label">Recent founder update summary (06/18/2024)</span>
-                  <span className="info-value">
-                    {data?.recent_update ||
-                      "Add Updates Here"}
-                  </span>
+                  <span className="info-label">Recent founder update summary ({new Date().toLocaleDateString()})</span>
+                  {isEditing ? (
+                    <textarea
+                      value={tempData?.recent_update || ""}
+                      onChange={(e) => {
+                        handleChange('recent_update', e.target.value);
+                        // Update the date when the recent update is changed
+                        setTempData((prev) => ({ ...prev, recent_update_date: new Date().toLocaleDateString() }));
+                      }}
+                    />
+                  ) : (
+                    <span className="info-value">
+                      {data?.recent_update || "Add Updates Here"}
+                    </span>
+                  )}
                 </div>
                 <div className="info-item overview-full">
                   <span className="info-label">Wins</span>
-                  <span className="info-value">
-                    {data?.wins ||
-                      "Add Wins Here"}
-                  </span>
+                  {isEditing ? (
+                    <textarea
+                      value={tempData?.wins || ""}
+                      onChange={(e) => handleChange('wins', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">
+                      {data?.wins || "Add Wins Here"}
+                    </span>
+                  )}
                 </div>
                 <div className="info-item overview-full">
                   <span className="info-label">Asks</span>
-                  <span className="info-value">
-                    {data?.asks ||
-                      "Add Asks Here"}
-                  </span>
+                  {isEditing ? (
+                    <textarea
+                      value={tempData?.asks || ""}
+                      onChange={(e) => handleChange('asks', e.target.value)}
+                    />
+                  ) : (
+                    <span className="info-value">
+                      {data?.asks || "Add Asks Here"}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -178,9 +369,6 @@ const CompaniesModal = ({ company, onClose }) => {
             <div className="side-card">
               <h4>Investor Updates</h4> {/* TODO: Add investor updates modal */}
             </div>
-
-
-
 
             <div className="side-card">
               <h4>Equity Entry Ops</h4> {/* TODO: Add entry setion popup modal  */}
