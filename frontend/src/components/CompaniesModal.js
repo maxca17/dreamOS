@@ -57,7 +57,9 @@ const CompaniesModal = ({ company, onClose }) => {
         overview: tempData.overview,
         recent_update: tempData.recent_update,
         wins: tempData.wins,
-        asks: tempData.asks
+        asks: tempData.asks,
+        poc: tempData.poc,
+        who_referred: tempData.who_referred
       })
       .eq('company_name', data.company_name);
 
@@ -214,14 +216,26 @@ const CompaniesModal = ({ company, onClose }) => {
                 <div className="info-item">
                   <span className="info-label">Primary Sector</span>
                   {isEditing ? (
-                    <input
+                    <select
                       value={tempData?.sector || ""}
                       onChange={(e) => handleChange('sector', e.target.value)}
-                    />
+                    >
+                      <option value="">Select Sector</option>
+                      <option value="CPG">CPG</option>
+                      <option value="FinTech">FinTech</option>
+                      <option value="Venture Capital">Venture Capital</option>
+                    </select>
                   ) : (
                     <span className="info-value">{data?.sector || "N/A"}</span>
                   )}
                 </div>
+
+
+
+
+
+
+
                 <div className="info-item">
                   <span className="info-label">One Liner</span>
                   {isEditing ? (
@@ -275,6 +289,7 @@ const CompaniesModal = ({ company, onClose }) => {
                       onChange={(e) => handleChange('stage', e.target.value)}
                     >
                       <option value="">Select Stage</option>
+                      <option value="None">None</option>
                       <option value="Pre-seed">Pre-seed</option>
                       <option value="Seed">Seed</option>
                       <option value="Series A">Series A</option>
@@ -288,6 +303,31 @@ const CompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">{data?.stage || "Series D"}</span>
                   )}
                 </div>
+
+
+
+
+                <div className="info-item">
+                  <span className="info-label">POC</span>
+                  {isEditing ? (
+                    <select
+                      value={tempData?.poc || ""}
+                      onChange={(e) => handleChange('poc', e.target.value)}
+                    >
+                      <option value="">Select POC</option>
+                      <option value="Richard">Richard</option>
+                      <option value="Jonah">Jonah</option>
+                      <option value="Aryan">Aryan</option>
+                      <option value="None">None</option>
+                    </select>
+                  ) : (
+                    <span className="info-value">{data?.poc || "None"}</span>
+                  )}
+                </div>
+
+
+
+
                 <div className="info-item overview-full">
                   <span className="info-label">Overview</span>
                   {isEditing ? (

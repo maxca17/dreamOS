@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 import '../css/components/decksandmemosmodal.css';
 
@@ -7,7 +7,7 @@ const DecksAndMemosModal = ({ companyName, onClose }) => {
   const [uploading, setUploading] = useState(false);
   const [fileToUpload, setFileToUpload] = useState(null);
 
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     if (!companyName) return;
     const { data, error } = await supabase
       .from('companies')
@@ -22,11 +22,11 @@ const DecksAndMemosModal = ({ companyName, onClose }) => {
 
     // Ensure data.files is an array, or default to empty
     setFiles(Array.isArray(data?.files) ? data.files : []);
-  };
+  }, [companyName]);
 
   useEffect(() => {
     fetchFiles();
-  }, [companyName]);
+  }, [companyName, fetchFiles]);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
