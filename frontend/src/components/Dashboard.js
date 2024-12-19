@@ -46,6 +46,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchLoginName();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]); // Add userId as a dependency to re-fetch when it changes
 
   var loginName1 = loginName;

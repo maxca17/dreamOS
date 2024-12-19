@@ -62,7 +62,7 @@ const Companies = (user) => {
           <label><input type="checkbox" /> 3</label>
         </div>
 
-        <div className="filters-section">
+        <div className="filters-section"> {/* TODO: Change activities filter */}
           <h4>Activities</h4>
           <label><input type="checkbox" /> Top Activities</label>
           <label><input type="checkbox" /> Video Calls</label>

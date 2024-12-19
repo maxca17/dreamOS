@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { supabase } from './supabaseClient';
 import './css/login.css';
-import logo from './dreamLogo.png';
 
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -34,46 +33,47 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      {/* <div className="login-Logo"><img src={logo} alt="Dream Ventures" /></div> */}
-      <h1 className="login-header">Dream Ventures</h1>
-      <h2 className="login-subheader">Sign in to your account</h2>
-      <h1 className="login-heading">{isSignUp ? 'Sign Up' : 'Login'}</h1>
-      <input
-        className="login-input"
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        className="login-input"
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      {isSignUp ? (
-        <>
-          <button className="login-button" onClick={handleSignUp}>Sign Up</button>
-          <p className="login-text">
-            Already have an account?{' '}
-            <span className="login-link" onClick={() => setIsSignUp(false)}>
-              Login here
-            </span>
-          </p>
-        </>
-      ) : (
-        <>
-          <button className="login-button" onClick={handleLogin}>Login</button>
-          <p className="login-text">
-            No account?{' '}
-            <span className="login-link" onClick={() => setIsSignUp(true)}>
-              Sign up here
-            </span>
-          </p>
-        </>
-      )}
+    <div className="login-page">
+      <div className="login-container">
+        <h1 className="login-header">Dream Ventures</h1>
+        <h2 className="login-subheader">Sign in to your account</h2>
+        <h1 className="login-heading">{isSignUp ? 'Sign Up' : 'Login'}</h1>
+        <input
+          className="login-input"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          className="login-input"
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {isSignUp ? (
+          <>
+            <button className="login-button" onClick={handleSignUp}>Sign Up</button>
+            <p className="login-text">
+              Already have an account?{' '}
+              <span className="login-link" onClick={() => setIsSignUp(false)}>
+                Login here
+              </span>
+            </p>
+          </>
+        ) : (
+          <>
+            <button className="login-button" onClick={handleLogin}>Login</button>
+            <p className="login-text">
+              No account?{' '}
+              <span className="login-link" onClick={() => setIsSignUp(true)}>
+                Sign up here
+              </span>
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 }

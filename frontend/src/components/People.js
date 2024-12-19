@@ -109,7 +109,7 @@ function People() {
                   >
                     <td className="people-name">{person.name}</td>
                     <td className="people-title">{person.title || 'N/A'}</td>
-                    <td className="people-type">{person.person_type || 'N/A'}</td>
+                    <td className="people-type">{person.person_type && person.person_type.length > 15 ? `${person.person_type.substring(0, 15)}...` : person.person_type || 'N/A'}</td>
                     <td className="people-sector">{person.sector_focus || 'N/A'}</td>
                     <td className="people-company">{person.company_name || 'N/A'}</td>
                     <td className="people-email">{person.email || 'N/A'}</td>

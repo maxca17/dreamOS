@@ -1,0 +1,110 @@
+.founders-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  
+  .founders-modal-content {
+    background: #fff;
+    padding: 20px;
+    width: 400px;
+    max-width: 90%;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+    font-family: sans-serif;
+  }
+  
+  .founders-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .founders-modal-content h2 {
+    margin-top: 0;
+  }
+  
+  .add-founder-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .add-founder-section select {
+    flex: 1;
+    margin-right: 10px;
+    padding: 5px;
+    font-size: 14px;
+  }
+  
+  .add-founder-section button {
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+    border-radius: 4px;
+  }
+  
+  .add-founder-section button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .founders-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+  
+  .founders-list h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  
+  .founder-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background: #fafafa;
+  }
+  
+  .founder-name {
+    font-weight: 600;
+  }
+  
+  .founder-date {
+    font-size: 12px;
+    color: #666;
+    margin: 0 10px;
+  }
+  
+  .delete-founder-button {
+    background: none;
+    border: none;
+    color: #c00;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 5px;
+  }
+  
+  .delete-founder-button:hover {
+    text-decoration: underline;
+  }
+  

@@ -2,13 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import '../css/components/companiesmodal.css';
 import { supabase } from '../supabaseClient';
 import DecksAndMemosModal from './DecksAndMemosModal';
+import FoundersModal from './FoundersModal';
+import InvestorUpdatesModal from './InvestorUpdatesModal';
+import EquityOpsModal from './EquityOpsModal';
 
-const CompaniesModal = ({ company, onClose }) => {
+const PortfolioCompaniesModal = ({ company, onClose }) => {
   const [data, setData] = useState(company);
   const [tempData, setTempData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [showDecksModal, setShowDecksModal] = useState(false);
-
+  const [showFoundersModal, setShowFoundersModal] = useState(false); // ADDED: To control FoundersModal visibility
+  const [showInvestorUpdatesModal, setShowInvestorUpdatesModal] = useState(false); // ADDED: To control InvestorUpdatesModal visibility
+  const [showEquityOpsModal, setShowEquityOpsModal] = useState(false); // ADDED: To control EquityOpsModal visibility
   const fetchData = useCallback(async () => {
     const { data: companyData, error } = await supabase
       .from('companies')
@@ -57,7 +62,10 @@ const CompaniesModal = ({ company, onClose }) => {
         overview: tempData.overview,
         recent_update: tempData.recent_update,
         wins: tempData.wins,
-        asks: tempData.asks
+        asks: tempData.asks,
+        poc: tempData.poc,
+        who_referred: tempData.who_referred,
+        status: tempData.status
       })
       .eq('company_name', data.company_name);
 
@@ -66,30 +74,13 @@ const CompaniesModal = ({ company, onClose }) => {
     } else {
       setData(tempData);
       setIsEditing(false);
-      // Re-fetch data to ensure we have the latest from DB
-      fetchData();
+      fetchData(); // re-fetch to ensure we have updated data
     }
   };
 
   const handleChange = (field, value) => {
     setTempData((prev) => ({ ...prev, [field]: value }));
   };
-
-  // Hardcoded data for demonstration
-  const founders = [
-    {
-      name: "Alex Bouaziz",
-      linkedIn: "https://www.linkedin.com/in/alexbouaziz/",
-      img: "https://placehold.co/50x50?text=AB",
-      icon: "https://placehold.co/16x16?text=IN"
-    },
-    {
-      name: "Shuo Wang",
-      linkedIn: "https://www.linkedin.com/in/shuo-wang-848a/",
-      img: "https://placehold.co/50x50?text=SW",
-      icon: "https://placehold.co/16x16?text=IN"
-    }
-  ];
 
   return (
     <div className="companies-modal-overlay">
@@ -144,6 +135,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     </span>
                   )}
                 </div>
+
                 <div className="info-item">
                   <span className="info-label">Revenue</span>
                   {isEditing ? (
@@ -155,6 +147,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">{data?.revenue || "N/A"}</span>
                   )}
                 </div>
+
                 <div className="info-item">
                   <span className="info-label">Region</span>
                   {isEditing ? (
@@ -166,6 +159,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">{data?.region || "N/A"}</span>
                   )}
                 </div>
+
                 <div className="info-item">
                   <span className="info-label">Website</span>
                   {isEditing ? (
@@ -181,6 +175,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     </span>
                   )}
                 </div>
+
                 <div className="info-item">
                   <span className="info-label">City</span>
                   {isEditing ? (
@@ -214,14 +209,20 @@ const CompaniesModal = ({ company, onClose }) => {
                 <div className="info-item">
                   <span className="info-label">Primary Sector</span>
                   {isEditing ? (
-                    <input
+                    <select
                       value={tempData?.sector || ""}
                       onChange={(e) => handleChange('sector', e.target.value)}
-                    />
+                    >
+                      <option value="">Select Sector</option>
+                      <option value="CPG">CPG</option>
+                      <option value="FinTech">FinTech</option>
+                      <option value="Venture Capital">Venture Capital</option>
+                    </select>
                   ) : (
                     <span className="info-value">{data?.sector || "N/A"}</span>
                   )}
                 </div>
+
                 <div className="info-item">
                   <span className="info-label">One Liner</span>
                   {isEditing ? (
@@ -233,6 +234,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">{data?.one_liner || ""}</span>
                   )}
                 </div>
+
                 <div className="info-item">
                   <span className="info-label">Fund</span>
                   {isEditing ? (
@@ -244,6 +246,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">{data?.fund || "Fund II"}</span>
                   )}
                 </div>
+
                 <div className="info-item">
                   <span className="info-label">Other Investors</span>
                   {isEditing ? (
@@ -255,6 +258,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">{data?.other_investors || "None"}</span>
                   )}
                 </div>
+
                 <div className="info-item">
                   <span className="info-label">Who Referred?</span>
                   {isEditing ? (
@@ -289,6 +293,25 @@ const CompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">{data?.stage || "Series D"}</span>
                   )}
                 </div>
+
+                <div className="info-item">
+                  <span className="info-label">POC</span>
+                  {isEditing ? (
+                    <select
+                      value={tempData?.poc || ""}
+                      onChange={(e) => handleChange('poc', e.target.value)}
+                    >
+                      <option value="">Select POC</option>
+                      <option value="Richard">Richard</option>
+                      <option value="Jonah">Jonah</option>
+                      <option value="Aryan">Aryan</option>
+                      <option value="None">None</option>
+                    </select>
+                  ) : (
+                    <span className="info-value">{data?.poc || "None"}</span>
+                  )}
+                </div>
+
                 <div className="info-item overview-full">
                   <span className="info-label">Overview</span>
                   {isEditing ? (
@@ -302,6 +325,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     </span>
                   )}
                 </div>
+
                 <div className="info-item overview-full">
                   <span className="info-label">Recent founder update summary ({new Date().toLocaleDateString()})</span>
                   {isEditing ? (
@@ -318,6 +342,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     </span>
                   )}
                 </div>
+
                 <div className="info-item overview-full">
                   <span className="info-label">Wins</span>
                   {isEditing ? (
@@ -331,6 +356,7 @@ const CompaniesModal = ({ company, onClose }) => {
                     </span>
                   )}
                 </div>
+
                 <div className="info-item overview-full">
                   <span className="info-label">Asks</span>
                   {isEditing ? (
@@ -344,26 +370,40 @@ const CompaniesModal = ({ company, onClose }) => {
                     </span>
                   )}
                 </div>
+
               </div>
             </div>
           </div>
 
           {/* RIGHT COLUMN */}
           <div className="companies-modal-right">
+            {/* FOUNDERS CARD */}
+            {/* CHANGED: Use data?.founders (from DB) and add a button to open FoundersModal */}
             <div className="side-card">
-              <h4>Founders</h4>
+              <h4>
+                Founders
+                <button
+                  className="expand-button"
+                  style={{ float: 'right', background: 'none', border: 'none', cursor: 'pointer' }}
+                  onClick={() => setShowFoundersModal(true)} // SHOW FOUNDERS MODAL
+                >
+                  &#x25B6;
+                </button>
+              </h4>
               <div className="founders-list">
-                {founders.map((f, idx) => (
-                  <div className="founder-item" key={idx}>
-                    <img src={f.img} alt={f.name} className="founder-img"/>
-                    <div className="founder-info">
-                      <div className="founder-name">{f.name}</div>
-                      <a href={f.linkedIn} target="_blank" rel="noopener noreferrer">
-                        <img src={f.icon} alt="LinkedIn" />
-                      </a>
+                {(data?.founders || []).length > 0 ? (
+                  (data?.founders || []).map((f, idx) => (
+                    <div className="founder-item" key={idx}>
+                      {/* If you have founder images or LinkedIn links in the data, you can show them here.
+                          For now, just showing their names */}
+                      <div className="founder-info">
+                        <div className="founder-name">{f.name}</div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p>No founders added yet.</p>
+                )}
               </div>
             </div>
 
@@ -378,8 +418,6 @@ const CompaniesModal = ({ company, onClose }) => {
                   &#x25B6;
                 </button>
               </h4>
-              {/* If you want to show an initial list from `data.files`,
-                  you can map over data.files here if it exists. */}
               {data?.files && data.files.length > 0 ? (
                 <ul className="docs-list">
                   {data.files.map((file, i) => (
@@ -397,12 +435,87 @@ const CompaniesModal = ({ company, onClose }) => {
             </div>
 
             <div className="side-card">
-              <h4>Investor Updates</h4> {/* TODO: Add investor updates modal */}
+              <h4>
+                Investor Updates
+                <button
+                  className="expand-button"
+                  style={{ float: 'right', background: 'none', border: 'none', cursor: 'pointer' }}
+                  onClick={() => setShowInvestorUpdatesModal(true)}
+                >
+                  &#x25B6;
+                </button>
+              </h4>
+              {data?.investor_updates && data.investor_updates.length > 0 ? (
+                <ul className="docs-list">
+                  {data.investor_updates
+                    .sort((a, b) => new Date(b.upload_date) - new Date(a.upload_date))
+                    .slice(0, 3)
+                    .map((update, i) => {
+                      const extension = update.update_name.split('.').pop();
+                      const nameWithoutExt = update.update_name.split('.').slice(0, -1).join('.');
+                      return (
+                        <li key={i}>
+                          <a href={update.update_url} target="_blank" rel="noopener noreferrer">
+                            {nameWithoutExt.length > 20 
+                              ? `${nameWithoutExt.slice(0, 20)}...${extension}`
+                              : update.update_name}
+                          </a>
+                          <span className="doc-date">
+                            {new Date(update.upload_date).toLocaleDateString()}
+                          </span>
+                        </li>
+                      );
+                    })}
+                </ul>
+              ) : (
+                <p>No investor updates uploaded yet.</p>
+              )}
+
+              {showInvestorUpdatesModal && (
+                <InvestorUpdatesModal
+                  companyName={data.company_name} 
+                  onClose={() => {
+                    setShowInvestorUpdatesModal(false);
+                    fetchData(); // Fetch updated data when modal closes
+                  }}
+                />
+              )}
             </div>
 
+
             <div className="side-card">
-              <h4>Equity Entry Ops</h4> {/* TODO: Add entry section popup modal */}
+              <h4>
+                Equity Entry Ops
+                <button
+                  className="expand-button"
+                  style={{ float: 'right', background: 'none', border: 'none', cursor: 'pointer' }}
+                  onClick={() => setShowEquityOpsModal(true)}
+                >
+                  &#x25B6;
+                </button>
+              </h4>
+              {(data?.equity_offers && data.equity_offers.length > 0) ? (
+                <ul className="docs-list">
+                  {data.equity_offers.map((offer, i) => (
+                    <li key={i}>
+                      {offer.round_type}: {offer.invested_amount} at {offer.valuation}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No offers added yet.</p>
+              )}
             </div>
+
+{showEquityOpsModal && (
+  <EquityOpsModal
+    companyName={data.company_name}
+    onClose={() => {
+      setShowEquityOpsModal(false);
+      fetchData(); // refresh company data after closing modal
+    }}
+  />
+)}
           </div>
         </div>
       </div>
@@ -412,8 +525,18 @@ const CompaniesModal = ({ company, onClose }) => {
           companyName={data.company_name}
           onClose={() => {
             setShowDecksModal(false);
-            // After closing the modal, re-fetch to get updated files
-            fetchData();
+            fetchData(); // Fetch updated data when modal closes
+          }}
+        />
+      )}
+
+      {/* ADDED: Show the FoundersModal when showFoundersModal is true */}
+      {showFoundersModal && (
+        <FoundersModal
+          companyName={data.company_name}
+          onClose={() => {
+            setShowFoundersModal(false);
+            fetchData(); // Fetch updated data when modal closes
           }}
         />
       )}
@@ -421,4 +544,4 @@ const CompaniesModal = ({ company, onClose }) => {
   );
 };
 
-export default CompaniesModal;
+export default PortfolioCompaniesModal;

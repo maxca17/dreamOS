@@ -15,6 +15,12 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
   };
 
   const handleSave = async () => {
+    // Ensure the person has a name before saving
+    if (!person.name || person.name.trim().length === 0) {
+      console.warn('Cannot save without a name.');
+      return;
+    }
+
     setSaving(true);
     try {
       const { data, error } = await supabase
@@ -132,6 +138,7 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                     placeholder="e.g. FinTech"
                   />
                 </div>
+
                 <div className="info-item">
                   <span className="info-label">Type</span>
                   <input
@@ -141,6 +148,7 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                     placeholder="e.g. VC"
                   />
                 </div>
+                
                 <div className="info-item">
                   <span className="info-label">City</span>
                   <input
@@ -237,7 +245,11 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
 
               <div className="person-modal-actions">
                 <button className="cancel-btn" onClick={onClose}>Cancel</button>
-                <button className="save-btn" onClick={handleSave} disabled={saving}>
+                <button
+                  className="save-btn"
+                  onClick={handleSave}
+                  disabled={saving || !person.name || person.name.trim().length === 0}
+                >
                   {saving ? 'Saving...' : 'Save'}
                 </button>
               </div>
