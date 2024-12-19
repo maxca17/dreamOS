@@ -48,30 +48,41 @@ const Companies = (user) => {
       <aside className="filters-sidebar">
         <div className="filters-section">
           <h4>Company Type</h4>
-          <label><input type="checkbox" defaultChecked /> Portfolio</label>
-          <label><input type="checkbox" /> Prospect</label>
-          <label><input type="checkbox" /> Network</label>
+          <label><input type="checkbox" defaultChecked /> All</label>
+          <label><input type="checkbox" /> Watchlist</label>
+          <label><input type="checkbox" /> Reviewing</label>
+          <label><input type="checkbox" /> Due Diligence</label>
+          <label><input type="checkbox" /> IC Review</label>
+          <label><input type="checkbox" /> Approved - Legal</label>
+          <label><input type="checkbox" /> Approved - Not Funded</label>
+          <label><input type="checkbox" /> Warehouse Deals</label>
+          <label><input type="checkbox" /> Portfolio</label>
+          <label><input type="checkbox" /> Passed</label>
         </div>
+
+
 
         <div className="filters-section">
-          <h4>Ranking</h4>
+          <h4>Deal Lead</h4>
           <label><input type="checkbox" defaultChecked /> All</label>
-          <label><input type="checkbox" /> Live Co-Invest</label>
-          <label><input type="checkbox" /> 1</label>
-          <label><input type="checkbox" /> 2</label>
-          <label><input type="checkbox" /> 3</label>
+          <label><input type="checkbox" /> Richard Blankenship</label>
+          <label><input type="checkbox" /> Joe Kakaty</label>
+          <label><input type="checkbox" /> Jonah Vella</label>
+          <label><input type="checkbox" /> Eric Wong</label>
+          <label><input type="checkbox" /> Oli Harris</label>
+          <label><input type="checkbox" /> Aryan Bhatnagar</label>
         </div>
 
-        <div className="filters-section"> {/* TODO: Change activities filter */}
-          <h4>Activities</h4>
-          <label><input type="checkbox" /> Top Activities</label>
-          <label><input type="checkbox" /> Video Calls</label>
-          <label><input type="checkbox" /> News</label>
-          <label><input type="checkbox" /> Founder Monthly Email</label>
-          <label><input type="checkbox" /> Social</label>
-          <label><input type="checkbox" /> Ranking</label>
-          <label><input type="checkbox" /> Announcements</label>
+        <div className="filters-section"> 
+          <h4>Sector</h4>
+          <label><input type="checkbox" /> All</label>
+          <label><input type="checkbox" /> CPG</label>
+          <label><input type="checkbox" /> Technology</label>
+          <label><input type="checkbox" /> Venture Capital</label>
+          <label><input type="checkbox" /> Private Equity</label>
         </div>
+
+
 
         <div className="filters-section">
           <h4>Valuation</h4>
@@ -86,14 +97,31 @@ const Companies = (user) => {
         </div>
 
         <div className="filters-section">
-          <h4>Industry</h4>
+          <h4>Round</h4>
           <label><input type="checkbox" defaultChecked /> All</label>
-          <label><input type="checkbox" /> B2B / SaaS</label>
-          <label><input type="checkbox" /> AI</label>
-          <label><input type="checkbox" /> FinTech</label>
-          <label><input type="checkbox" /> FrontierTech</label>
+          <label><input type="checkbox" /> Pre-Seed</label>
+          <label><input type="checkbox" /> Seed</label>
+          <label><input type="checkbox" /> Series A</label>
+          <label><input type="checkbox" /> Series B</label>
+          <label><input type="checkbox" /> Series C</label>
+          <label><input type="checkbox" /> Series D</label>
+          <label><input type="checkbox" /> Bridge Round</label>
+          <label><input type="checkbox" /> Growth Round</label>
+          <label><input type="checkbox" /> None-N/A</label>
+        </div>
+
+        <div className="filters-section">
+          <h4>Process Stage</h4>
+          <label><input type="checkbox" defaultChecked /> All</label>
+          <label><input type="checkbox" /> Deck Review</label>
+          <label><input type="checkbox" /> Intro Call</label>
+          <label><input type="checkbox" /> Second Call</label>
+          <label><input type="checkbox" /> Diligence</label>
+
         </div>
       </aside>
+
+
 
       <div className="companies-content-wrapper">
         <div className="companies-content">
@@ -112,7 +140,7 @@ const Companies = (user) => {
             <button className="tag-filter">Portfolio</button>
 
             <div className="sort-dropdown">
-              <button className="sort-btn">Valuation ▼</button>
+              <button className="sort-btn">Valuation</button>
             </div>
           </div>
 
