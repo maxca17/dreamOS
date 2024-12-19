@@ -199,7 +199,7 @@ const CompaniesModal = ({ company, onClose }) => {
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
                       <option value="Pending">Pending</option>
-                      <option value="Closed">Portfolio Company</option>
+                      <option value="Portfolio Company">Portfolio Company</option>
                     </select>
                   ) : (
                     <span className="info-value">{data?.status || "N/A"}</span>
