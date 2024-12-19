@@ -9,6 +9,14 @@ const Companies = (user) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    companyType: { all: true },
+    dealLead: { all: true },
+    sector: { all: true },
+    valuation: { all: true },
+    round: { all: true },
+    processStage: { all: true }
+  });
 
   const fetchCompanies = async () => {
     const { data, error } = await supabase.from('companies').select('*').order('company_name', { ascending: true });
@@ -37,6 +45,34 @@ const Companies = (user) => {
     setSearchTerm(event.target.value);
   };
 
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => {
+      if (value === 'all') {
+        // If "all" is being toggled, uncheck all other options if "all" is being checked
+        const newState = { ...prev[filterType] };
+        if (!prev[filterType].all) {
+          Object.keys(newState).forEach(key => {
+            newState[key] = key === 'all';
+          });
+        }
+        return {
+          ...prev,
+          [filterType]: newState
+        };
+      } else {
+        // If a non-"all" option is being toggled
+        return {
+          ...prev,
+          [filterType]: {
+            ...prev[filterType],
+            all: false,
+            [value]: !prev[filterType][value]
+          }
+        };
+      }
+    });
+  };
+
   const filteredCompanies = companies.filter((company) =>
     company.company_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -48,80 +84,73 @@ const Companies = (user) => {
       <aside className="filters-sidebar">
         <div className="filters-section">
           <h4>Company Type</h4>
-          <label><input type="checkbox" defaultChecked /> All</label>
-          <label><input type="checkbox" /> Watchlist</label>
-          <label><input type="checkbox" /> Reviewing</label>
-          <label><input type="checkbox" /> Due Diligence</label>
-          <label><input type="checkbox" /> IC Review</label>
-          <label><input type="checkbox" /> Approved - Legal</label>
-          <label><input type="checkbox" /> Approved - Not Funded</label>
-          <label><input type="checkbox" /> Warehouse Deals</label>
-          <label><input type="checkbox" /> Portfolio</label>
-          <label><input type="checkbox" /> Passed</label>
+          <label><input type="checkbox" checked={filters.companyType.all} onChange={() => handleFilterChange('companyType', 'all')} /> All</label>
+          <label><input type="checkbox" checked={filters.companyType.watchlist} onChange={() => handleFilterChange('companyType', 'watchlist')} /> Watchlist</label>
+          <label><input type="checkbox" checked={filters.companyType.reviewing} onChange={() => handleFilterChange('companyType', 'reviewing')} /> Reviewing</label>
+          <label><input type="checkbox" checked={filters.companyType.dueDiligence} onChange={() => handleFilterChange('companyType', 'dueDiligence')} /> Due Diligence</label>
+          <label><input type="checkbox" checked={filters.companyType.icReview} onChange={() => handleFilterChange('companyType', 'icReview')} /> IC Review</label>
+          <label><input type="checkbox" checked={filters.companyType.approvedLegal} onChange={() => handleFilterChange('companyType', 'approvedLegal')} /> Approved - Legal</label>
+          <label><input type="checkbox" checked={filters.companyType.approvedNotFunded} onChange={() => handleFilterChange('companyType', 'approvedNotFunded')} /> Approved - Not Funded</label>
+          <label><input type="checkbox" checked={filters.companyType.warehouse} onChange={() => handleFilterChange('companyType', 'warehouse')} /> Warehouse Deals</label>
+          <label><input type="checkbox" checked={filters.companyType.portfolio} onChange={() => handleFilterChange('companyType', 'portfolio')} /> Portfolio</label>
+          <label><input type="checkbox" checked={filters.companyType.passed} onChange={() => handleFilterChange('companyType', 'passed')} /> Passed</label>
         </div>
-
-
 
         <div className="filters-section">
           <h4>Deal Lead</h4>
-          <label><input type="checkbox" defaultChecked /> All</label>
-          <label><input type="checkbox" /> Richard Blankenship</label>
-          <label><input type="checkbox" /> Joe Kakaty</label>
-          <label><input type="checkbox" /> Jonah Vella</label>
-          <label><input type="checkbox" /> Eric Wong</label>
-          <label><input type="checkbox" /> Oli Harris</label>
-          <label><input type="checkbox" /> Aryan Bhatnagar</label>
+          <label><input type="checkbox" checked={filters.dealLead.all} onChange={() => handleFilterChange('dealLead', 'all')} /> All</label>
+          <label><input type="checkbox" checked={filters.dealLead.richard} onChange={() => handleFilterChange('dealLead', 'richard')} /> Richard Blankenship</label>
+          <label><input type="checkbox" checked={filters.dealLead.joe} onChange={() => handleFilterChange('dealLead', 'joe')} /> Joe Kakaty</label>
+          <label><input type="checkbox" checked={filters.dealLead.jonah} onChange={() => handleFilterChange('dealLead', 'jonah')} /> Jonah Vella</label>
+          <label><input type="checkbox" checked={filters.dealLead.eric} onChange={() => handleFilterChange('dealLead', 'eric')} /> Eric Wong</label>
+          <label><input type="checkbox" checked={filters.dealLead.oli} onChange={() => handleFilterChange('dealLead', 'oli')} /> Oli Harris</label>
+          <label><input type="checkbox" checked={filters.dealLead.aryan} onChange={() => handleFilterChange('dealLead', 'aryan')} /> Aryan Bhatnagar</label>
         </div>
 
         <div className="filters-section"> 
           <h4>Sector</h4>
-          <label><input type="checkbox" /> All</label>
-          <label><input type="checkbox" /> CPG</label>
-          <label><input type="checkbox" /> Technology</label>
-          <label><input type="checkbox" /> Venture Capital</label>
-          <label><input type="checkbox" /> Private Equity</label>
+          <label><input type="checkbox" checked={filters.sector.all} onChange={() => handleFilterChange('sector', 'all')} /> All</label>
+          <label><input type="checkbox" checked={filters.sector.cpg} onChange={() => handleFilterChange('sector', 'cpg')} /> CPG</label>
+          <label><input type="checkbox" checked={filters.sector.technology} onChange={() => handleFilterChange('sector', 'technology')} /> Technology</label>
+          <label><input type="checkbox" checked={filters.sector.vc} onChange={() => handleFilterChange('sector', 'vc')} /> Venture Capital</label>
+          <label><input type="checkbox" checked={filters.sector.pe} onChange={() => handleFilterChange('sector', 'pe')} /> Private Equity</label>
         </div>
-
-
 
         <div className="filters-section">
           <h4>Valuation</h4>
-          <label><input type="checkbox" defaultChecked /> All</label>
-          <label><input type="checkbox" /> +5b</label>
-          <label><input type="checkbox" /> 1-5b</label>
-          <label><input type="checkbox" /> 500m-1b</label>
-          <label><input type="checkbox" /> 100-500m</label>
-          <label><input type="checkbox" /> 50-100m</label>
-          <label><input type="checkbox" /> &lt;50m</label>
-          <label><input type="checkbox" /> N/A</label>
+          <label><input type="checkbox" checked={filters.valuation.all} onChange={() => handleFilterChange('valuation', 'all')} /> All</label>
+          <label><input type="checkbox" checked={filters.valuation.plus5b} onChange={() => handleFilterChange('valuation', 'plus5b')} /> +5b</label>
+          <label><input type="checkbox" checked={filters.valuation.b1to5} onChange={() => handleFilterChange('valuation', 'b1to5')} /> 1-5b</label>
+          <label><input type="checkbox" checked={filters.valuation.m500to1b} onChange={() => handleFilterChange('valuation', 'm500to1b')} /> 500m-1b</label>
+          <label><input type="checkbox" checked={filters.valuation.m100to500} onChange={() => handleFilterChange('valuation', 'm100to500')} /> 100-500m</label>
+          <label><input type="checkbox" checked={filters.valuation.m50to100} onChange={() => handleFilterChange('valuation', 'm50to100')} /> 50-100m</label>
+          <label><input type="checkbox" checked={filters.valuation.under50m} onChange={() => handleFilterChange('valuation', 'under50m')} /> &lt;50m</label>
+          <label><input type="checkbox" checked={filters.valuation.na} onChange={() => handleFilterChange('valuation', 'na')} /> N/A</label>
         </div>
 
         <div className="filters-section">
           <h4>Round</h4>
-          <label><input type="checkbox" defaultChecked /> All</label>
-          <label><input type="checkbox" /> Pre-Seed</label>
-          <label><input type="checkbox" /> Seed</label>
-          <label><input type="checkbox" /> Series A</label>
-          <label><input type="checkbox" /> Series B</label>
-          <label><input type="checkbox" /> Series C</label>
-          <label><input type="checkbox" /> Series D</label>
-          <label><input type="checkbox" /> Bridge Round</label>
-          <label><input type="checkbox" /> Growth Round</label>
-          <label><input type="checkbox" /> None-N/A</label>
+          <label><input type="checkbox" checked={filters.round.all} onChange={() => handleFilterChange('round', 'all')} /> All</label>
+          <label><input type="checkbox" checked={filters.round.preSeed} onChange={() => handleFilterChange('round', 'preSeed')} /> Pre-Seed</label>
+          <label><input type="checkbox" checked={filters.round.seed} onChange={() => handleFilterChange('round', 'seed')} /> Seed</label>
+          <label><input type="checkbox" checked={filters.round.seriesA} onChange={() => handleFilterChange('round', 'seriesA')} /> Series A</label>
+          <label><input type="checkbox" checked={filters.round.seriesB} onChange={() => handleFilterChange('round', 'seriesB')} /> Series B</label>
+          <label><input type="checkbox" checked={filters.round.seriesC} onChange={() => handleFilterChange('round', 'seriesC')} /> Series C</label>
+          <label><input type="checkbox" checked={filters.round.seriesD} onChange={() => handleFilterChange('round', 'seriesD')} /> Series D</label>
+          <label><input type="checkbox" checked={filters.round.bridge} onChange={() => handleFilterChange('round', 'bridge')} /> Bridge Round</label>
+          <label><input type="checkbox" checked={filters.round.growth} onChange={() => handleFilterChange('round', 'growth')} /> Growth Round</label>
+          <label><input type="checkbox" checked={filters.round.none} onChange={() => handleFilterChange('round', 'none')} /> None-N/A</label>
         </div>
 
         <div className="filters-section">
           <h4>Process Stage</h4>
-          <label><input type="checkbox" defaultChecked /> All</label>
-          <label><input type="checkbox" /> Deck Review</label>
-          <label><input type="checkbox" /> Intro Call</label>
-          <label><input type="checkbox" /> Second Call</label>
-          <label><input type="checkbox" /> Diligence</label>
-
+          <label><input type="checkbox" checked={filters.processStage.all} onChange={() => handleFilterChange('processStage', 'all')} /> All</label>
+          <label><input type="checkbox" checked={filters.processStage.deckReview} onChange={() => handleFilterChange('processStage', 'deckReview')} /> Deck Review</label>
+          <label><input type="checkbox" checked={filters.processStage.introCall} onChange={() => handleFilterChange('processStage', 'introCall')} /> Intro Call</label>
+          <label><input type="checkbox" checked={filters.processStage.secondCall} onChange={() => handleFilterChange('processStage', 'secondCall')} /> Second Call</label>
+          <label><input type="checkbox" checked={filters.processStage.diligence} onChange={() => handleFilterChange('processStage', 'diligence')} /> Diligence</label>
         </div>
       </aside>
-
-
 
       <div className="companies-content-wrapper">
         <div className="companies-content">
@@ -140,7 +169,7 @@ const Companies = (user) => {
             <button className="tag-filter">Portfolio</button>
 
             <div className="sort-dropdown">
-              <button className="sort-btn">Valuation</button>
+              <button className="sort-btn">Add a Company</button>
             </div>
           </div>
 

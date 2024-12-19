@@ -8,6 +8,7 @@ import Companies from '../components/Companies';
 import People from '../components/People';
 import PortfolioCompanies from '../components/PortfolioCompanies';
 import PortfolioStats from '../components/PortfolioStats';
+import LPs from '../components/LPs';
 
 function AppRoutes({ user, loading }) {
   return (
@@ -59,6 +60,14 @@ function AppRoutes({ user, loading }) {
         element={
           <ProtectedRoute user={user} loading={loading}>
             <PortfolioStats user={user} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lps"
+        element={
+          <ProtectedRoute user={user} loading={loading}>
+            <LPs user={user} />
           </ProtectedRoute>
         }
       />
