@@ -3,12 +3,14 @@ import '../css/components/companies.css';
 import NavBar from '../constants/Navbar';
 import { supabase } from '../supabaseClient';
 import CompaniesModal from './CompaniesModal';
+import AddCompanyModal from './AddCompanyModal'; // NEW: Import AddCompanyModal
 
 const Companies = (user) => {
   const [companies, setCompanies] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAddCompanyModal, setShowAddCompanyModal] = useState(false); // NEW: controls AddCompanyModal visibility
   const [filters, setFilters] = useState({
     companyType: { all: true },
     dealLead: { all: true },
@@ -19,7 +21,11 @@ const Companies = (user) => {
   });
 
   const fetchCompanies = async () => {
-    const { data, error } = await supabase.from('companies').select('*').order('company_name', { ascending: true });
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .order('company_name', { ascending: true });
+
     if (error) {
       console.error('Error fetching companies:', error);
     } else {
@@ -46,12 +52,11 @@ const Companies = (user) => {
   };
 
   const handleFilterChange = (filterType, value) => {
-    setFilters(prev => {
+    setFilters((prev) => {
       if (value === 'all') {
-        // If "all" is being toggled, uncheck all other options if "all" is being checked
         const newState = { ...prev[filterType] };
         if (!prev[filterType].all) {
-          Object.keys(newState).forEach(key => {
+          Object.keys(newState).forEach((key) => {
             newState[key] = key === 'all';
           });
         }
@@ -60,14 +65,23 @@ const Companies = (user) => {
           [filterType]: newState
         };
       } else {
-        // If a non-"all" option is being toggled
+        const newFilterState = {
+          ...prev[filterType],
+          all: false,
+          [value]: !prev[filterType][value]
+        };
+
+        const hasCheckedOption = Object.entries(newFilterState).some(
+          ([key, val]) => key !== 'all' && val
+        );
+
+        if (!hasCheckedOption) {
+          newFilterState.all = true;
+        }
+
         return {
           ...prev,
-          [filterType]: {
-            ...prev[filterType],
-            all: false,
-            [value]: !prev[filterType][value]
-          }
+          [filterType]: newFilterState
         };
       }
     });
@@ -166,10 +180,14 @@ const Companies = (user) => {
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <button className="tag-filter">Portfolio</button>
 
             <div className="sort-dropdown">
-              <button className="sort-btn">Add a Company</button>
+              <button 
+                className="sort-btn" 
+                onClick={() => setShowAddCompanyModal(true)} // NEW: Open AddCompanyModal
+              >
+                Add a Company
+              </button>
             </div>
           </div>
 
@@ -218,6 +236,13 @@ const Companies = (user) => {
             <CompaniesModal 
               company={selectedCompany} 
               onClose={handleCloseModal} 
+            />
+          )}
+
+          {showAddCompanyModal && (
+            <AddCompanyModal 
+              onClose={() => setShowAddCompanyModal(false)}
+              onCompanyAdded={fetchCompanies} // NEW: Refresh list after adding a new company
             />
           )}
 

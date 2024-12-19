@@ -18,7 +18,7 @@ function People() {
     const { data, error } = await supabase
       .from('people')
       .select('*')
-      .order('id', { ascending: true });
+      .order('name', { ascending: true }); // Changed to order by name
 
     if (error) {
       setError(error.message);
