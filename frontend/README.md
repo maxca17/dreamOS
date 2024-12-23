@@ -1,6 +1,6 @@
 # This is the internal system for Dream Ventures 
 
-## How to run the project
+## How to run the project (Frontend)
 
 1. Clone the repository
 2. Run `npm install` to install the dependencies

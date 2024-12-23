@@ -4,13 +4,13 @@ import NavBar from '../constants/Navbar';
 import { supabase } from '../supabaseClient';
 import PortfolioCompaniesModal from './PortfolioCompaniesModal';
 
-const Companies = (user) => {
+const PortfolioCompanies = (user) => {
   const [companies, setCompanies] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
 
   const fetchCompanies = async () => {
-    const { data, error } = await supabase.from('companies').select('*').eq('status', 'Portfolio Company');
+    const { data, error } = await supabase.from('companies').select('*').eq('status', 'Portfolio Company').order('company_name', { ascending: true });
     if (error) {
       console.error('Error fetching companies:', error);
     } else {
@@ -156,4 +156,4 @@ const Companies = (user) => {
   );
 };
 
-export default Companies;
+export default PortfolioCompanies;

@@ -31,11 +31,10 @@ body {
   min-height: 100vh;
 }
 
-/* Main content area sits right next to the sidebar with no large left margin */
+/* Main content area next to the sidebar */
 .people-main-content {
   flex: 1;
-  padding: 1.5rem; 
-  /* Reduced padding from 2rem to 1.5rem to tighten spacing */
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -48,7 +47,7 @@ body {
   color: var(--text-color);
 }
 
-/* Controls section (search + add button) */
+/* Basic controls row (for basic search) */
 .people-controls {
   display: flex;
   align-items: center;
@@ -56,7 +55,7 @@ body {
   gap: 1rem;
 }
 
-/* Search input style */
+/* Basic search input style */
 .people-search-input {
   flex: 1;
   padding: 0.5rem 1rem;
@@ -177,7 +176,8 @@ body {
     padding: 1rem;
   }
 
-  .people-table th, .people-table td {
+  .people-table th,
+  .people-table td {
     padding: 0.5rem;
     font-size: 0.85rem;
   }
@@ -266,4 +266,117 @@ body {
 
 .person-modal-button:hover {
   background-color: var(--primary-color-hover);
+}
+
+/* Toggle switch styling for search mode */
+.search-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Switch styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider design */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--secondary-color);
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+.search-mode-label {
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+/* Advanced search container */
+.advanced-search-container {
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.advanced-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.advanced-search-field {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.advanced-search-field label {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.advanced-search-field input {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  color: var(--text-color);
+  background: var(--secondary-color);
+  outline: none;
+  transition: border-color var(--transition-speed) ease;
+}
+
+.advanced-search-field input:focus {
+  border-color: var(--primary-color);
+}
+
+.advanced-search-actions {
+  justify-content: flex-end;
 }

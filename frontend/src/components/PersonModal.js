@@ -114,6 +114,9 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                     onChange={(e) => handleChange('company_name', e.target.value)}
                   />
                 </div>
+
+
+
                 <div className="info-item">
                   <span className="info-label">Stage</span>
                   <select
@@ -129,15 +132,28 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                     <option value="Other">Other</option>
                   </select>
                 </div>
+
+
                 <div className="info-item">
                   <span className="info-label">Sector (Focus)</span>
-                  <input
-                    type="text"
+                  <select
                     value={person.sector_focus || ''}
                     onChange={(e) => handleChange('sector_focus', e.target.value)}
-                    placeholder="e.g. FinTech"
-                  />
+                  >
+                    <option value="" disabled>Select sector</option>
+                    <option value="FinTech">FinTech</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Defense">Defense</option>
+                    <option value="Space">Space</option>
+                    <option value="Consumer">Consumer</option>
+                    <option value="CPG">CPG</option>
+                    <option value="AI">AI</option>
+                    <option value="BioTech">BioTech</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
+
+
 
                 <div className="info-item">
                   <span className="info-label">Type</span>
@@ -224,6 +240,27 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                     <option value="$5M+">$5M+</option>
                   </select>
                 </div>
+
+
+
+
+
+                <div className="info-item">
+                  <span className="info-label">Website</span>
+                  <input
+                    type="text"
+                    value={person.website || ''}
+                    onChange={(e) => handleChange('website', e.target.value)}
+                  />
+                </div>
+
+
+
+
+
+
+
+
                 <div className="info-item">
                   <span className="info-label">Address</span>
                   <input
