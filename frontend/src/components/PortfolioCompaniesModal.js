@@ -5,6 +5,7 @@ import DecksAndMemosModal from './DecksAndMemosModal';
 import FoundersModal from './FoundersModal';
 import InvestorUpdatesModal from './InvestorUpdatesModal';
 import EquityOpsModal from './EquityOpsModal';
+import EquityInvestmentsModal from './EquityInvestmentModal';
 
 const PortfolioCompaniesModal = ({ company, onClose }) => {
   const [data, setData] = useState(company);
@@ -14,6 +15,7 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
   const [showFoundersModal, setShowFoundersModal] = useState(false); // ADDED: To control FoundersModal visibility
   const [showInvestorUpdatesModal, setShowInvestorUpdatesModal] = useState(false); // ADDED: To control InvestorUpdatesModal visibility
   const [showEquityOpsModal, setShowEquityOpsModal] = useState(false); // ADDED: To control EquityOpsModal visibility
+  const [showEquityInvestmentsModal, setShowEquityInvestmentsModal] = useState(false); // ADDED: To control EquityInvestmentsModal visibility
   const fetchData = useCallback(async () => {
     const { data: companyData, error } = await supabase
       .from('companies')
@@ -235,17 +237,6 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
                   )}
                 </div>
 
-                <div className="info-item">
-                  <span className="info-label">Fund</span>
-                  {isEditing ? (
-                    <input
-                      value={tempData?.fund || ""}
-                      onChange={(e) => handleChange('fund', e.target.value)}
-                    />
-                  ) : (
-                    <span className="info-value">{data?.fund || "Fund II"}</span>
-                  )}
-                </div>
 
                 <div className="info-item">
                   <span className="info-label">Other Investors</span>
@@ -291,6 +282,23 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
                     </select>
                   ) : (
                     <span className="info-value">{data?.stage || "Series D"}</span>
+                  )}
+                </div>
+
+
+                <div className="info-item">
+                  <span className="info-label">Fund</span>
+                  {isEditing ? (
+                    <select
+                      value={tempData?.fund || ""}
+                      onChange={(e) => handleChange('fund', e.target.value)}
+                    >
+                      <option value="">Select Fund</option>
+                      <option value="Fund I">Fund I</option>
+                      <option value="Fund II">Fund II</option>
+                    </select>
+                  ) : (
+                    <span className="info-value">{data?.fund || "Add Fund Here"}</span>
                   )}
                 </div>
 
@@ -507,15 +515,49 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
               )}
             </div>
 
-{showEquityOpsModal && (
-  <EquityOpsModal
-    companyName={data.company_name}
-    onClose={() => {
-      setShowEquityOpsModal(false);
-      fetchData(); // refresh company data after closing modal
-    }}
-  />
-)}
+            <div className="side-card">
+              <h4>
+                Equity Investments
+                <button
+                  className="expand-button"
+                  style={{ float: 'right', background: 'none', border: 'none', cursor: 'pointer' }}
+                  onClick={() => setShowEquityInvestmentsModal(true)}
+                >
+                  &#x25B6;
+                </button>
+              </h4>
+              {(data?.equity_investments && data.equity_investments.length > 0) ? (
+                <ul className="docs-list">
+                  {data.equity_investments.map((investment, i) => (
+                    <li key={i}>
+                      {investment.round_type}: {investment.invested_amount} at {investment.valuation}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No Investments added yet.</p>
+              )}
+            </div>
+
+            {showEquityInvestmentsModal && (
+              <EquityInvestmentsModal
+                companyName={data.company_name}
+                onClose={() => {
+                  setShowEquityInvestmentsModal(false);
+                  fetchData(); // refresh company data after closing modal
+                }}
+              />
+            )}
+            
+            {showEquityOpsModal && (
+              <EquityOpsModal
+                companyName={data.company_name}
+                onClose={() => {
+                  setShowEquityOpsModal(false);
+                  fetchData(); // refresh company data after closing modal
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

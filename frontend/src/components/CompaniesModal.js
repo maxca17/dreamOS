@@ -6,7 +6,7 @@ import FoundersModal from './FoundersModal';
 import InvestorUpdatesModal from './InvestorUpdatesModal';
 import EquityOpsModal from './EquityOpsModal';
 
-const CompaniesModal = ({ company, onClose }) => {
+const CompaniesModal = ({ company, onClose, onDelete }) => {
   const [data, setData] = useState(company);
   const [tempData, setTempData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
@@ -14,7 +14,10 @@ const CompaniesModal = ({ company, onClose }) => {
   const [showFoundersModal, setShowFoundersModal] = useState(false); // ADDED: To control FoundersModal visibility
   const [showInvestorUpdatesModal, setShowInvestorUpdatesModal] = useState(false); // ADDED: To control InvestorUpdatesModal visibility
   const [showEquityOpsModal, setShowEquityOpsModal] = useState(false); // ADDED: To control EquityOpsModal visibility
+  const [deleteButton, setDeleteButton] = useState(false); // ADDED: To control DeleteModal visibility
   const fetchData = useCallback(async () => {
+
+    // Fetch company data from the database
     const { data: companyData, error } = await supabase
       .from('companies')
       .select('*')
@@ -82,6 +85,25 @@ const CompaniesModal = ({ company, onClose }) => {
     setTempData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleDelete = async () => {
+    const { error } = await supabase.from('companies').delete().eq('company_name', data.company_name);
+    if (error) {
+      console.error('Error deleting data:', error);
+    } else {
+      onClose(); // Close the modal after deletion
+      if (onDelete) {
+        onDelete(); // Trigger parent component to refresh data
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (deleteButton) {
+      handleDelete();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteButton]);
+
   return (
     <div className="companies-modal-overlay">
       <div className="companies-modal-content">
@@ -95,10 +117,12 @@ const CompaniesModal = ({ company, onClose }) => {
                 <h3>Company Information</h3>
                 {!isEditing && (
                   <button className="pdf-button" onClick={handleEdit}>Edit</button>
+                  
                 )}
                 {isEditing && (
                   <div style={{ display: "flex", gap: "10px" }}>
                     <button className="pdf-button" onClick={handleSave}>Save</button>
+                    <button className="pdf-button" onClick={() => setDeleteButton(true)}>Delete</button>
                     <button className="pdf-button" onClick={handleCancel}>Cancel</button>
                   </div>
                 )}
@@ -392,15 +416,15 @@ const CompaniesModal = ({ company, onClose }) => {
               </h4>
               <div className="founders-list">
                 {(data?.founders || []).length > 0 ? (
-                  (data?.founders || []).map((f, idx) => (
-                    <div className="founder-item" key={idx}>
-                      {/* If you have founder images or LinkedIn links in the data, you can show them here.
-                          For now, just showing their names */}
-                      <div className="founder-info">
-                        <div className="founder-name">{f.name}</div>
+                  (data.founders || [])
+                    .sort((a, b) => b.name ? b.name.localeCompare(a.name) : -1) // Sort founders Z-A, handling potential undefined names
+                    .map((f, idx) => (
+                      <div className="founder-item" key={idx}>
+                        <div className="founder-info">
+                          <div className="founder-name">{f.name}</div>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    ))
                 ) : (
                   <p>No founders added yet.</p>
                 )}

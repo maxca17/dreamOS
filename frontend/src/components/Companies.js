@@ -3,14 +3,14 @@ import '../css/components/companies.css';
 import NavBar from '../constants/Navbar';
 import { supabase } from '../supabaseClient';
 import CompaniesModal from './CompaniesModal';
-import AddCompanyModal from './AddCompanyModal'; // NEW: Import AddCompanyModal
+import AddCompanyModal from './AddCompanyModal';
 
 const Companies = (user) => {
   const [companies, setCompanies] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showAddCompanyModal, setShowAddCompanyModal] = useState(false); // NEW: controls AddCompanyModal visibility
+  const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [filters, setFilters] = useState({
     companyType: { all: true },
     dealLead: { all: true },
@@ -33,9 +33,17 @@ const Companies = (user) => {
     }
   };
 
+  // Fetch on initial load
   useEffect(() => {
     fetchCompanies();
   }, []);
+
+  // Fetch when modal state changes from open to closed
+  useEffect(() => {
+    if (!isModalOpen) {
+      fetchCompanies();
+    }
+  }, [isModalOpen]);
 
   const handleOpenModal = (company) => {
     setSelectedCompany(company);

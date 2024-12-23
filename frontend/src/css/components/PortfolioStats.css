@@ -1,0 +1,74 @@
+/* 
+   PortfolioStats.css
+   Adjust any colors, spacings, or fonts as needed to match your design.
+*/
+
+/* A wrapper that places the navbar on the left
+   and the content on the right. */
+   .portfolio-stats-wrapper {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh; /* Ensures the sidebar extends full viewport height */
+  }
+  
+  /* The main content area, to the right of the NavBar */
+  .portfolio-stats-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: #fafafa;
+    /* If you need a certain width for your layout, you can add max-width or other constraints here */
+  }
+  
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+  
+  /* Tab container for Fund I / Fund II buttons */
+  .tabs-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .tab-button {
+    padding: 0.75rem 1.25rem;
+    border: none;
+    outline: none;
+    background-color: #f0f0f0;
+    color: #333;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-radius: 4px;
+  }
+  
+  .tab-button:hover {
+    background-color: #e5e5e5;
+  }
+  
+  .tab-button.active {
+    background-color: #4A90E2;
+    color: #fff;
+  }
+  
+  /* Content area for each tab’s stats */
+  .tab-content {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    max-width: 600px; /* Adjust as desired */
+  }
+  
+  /* Stats section styling */
+  .stats-section h2 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+  }
+  
+  .stats-section p {
+    margin: 0.5rem 0;
+  }
+  
