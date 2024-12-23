@@ -19,7 +19,7 @@ const NavBar = () => {
             <Link to="/companies">Companies</Link>
           </li>
           <li className={location.pathname === "/people" ? "active" : ""}>
-            <Link to="/people">People</Link>
+            <Link to="/people">Network</Link>
           </li>
           <li className={location.pathname === "/portfoliocompanies" ? "active" : ""}>
             <Link to="/portfoliocompanies">Portfolio Companies</Link>

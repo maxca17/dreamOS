@@ -16,6 +16,7 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
   const [showInvestorUpdatesModal, setShowInvestorUpdatesModal] = useState(false); // ADDED: To control InvestorUpdatesModal visibility
   const [showEquityOpsModal, setShowEquityOpsModal] = useState(false); // ADDED: To control EquityOpsModal visibility
   const [showEquityInvestmentsModal, setShowEquityInvestmentsModal] = useState(false); // ADDED: To control EquityInvestmentsModal visibility
+  
   const fetchData = useCallback(async () => {
     const { data: companyData, error } = await supabase
       .from('companies')
@@ -347,15 +348,16 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
 
 
                 <div className="info-item">
-                  <span className="info-label">Is Company Alive?</span>
+                  <span className="info-label">Operational Status</span>
                   {isEditing ? (
                     <select
                       value={tempData?.company_alive || ""}
                       onChange={(e) => handleChange('company_alive', e.target.value)}
                     >
                       <option value="">Select Status</option>
-                      <option value="Alive">Alive</option>
-                      <option value="Dead">Dead</option>
+                      <option value="Active">Active</option>
+                      <option value="Exited">Exited</option>
+                      <option value="Shut-Down">Shut-Down</option>
                     </select>
                   ) : (
                     <span className="info-value">{data?.company_alive || ""}</span>

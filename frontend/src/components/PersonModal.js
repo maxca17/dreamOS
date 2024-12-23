@@ -154,7 +154,6 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                 </div>
 
 
-
                 <div className="info-item">
                   <span className="info-label">Type</span>
                   <select
