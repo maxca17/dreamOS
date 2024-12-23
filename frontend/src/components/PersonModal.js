@@ -141,12 +141,22 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
 
                 <div className="info-item">
                   <span className="info-label">Type</span>
-                  <input
-                    type="text"
+                  <select
                     value={person.person_type || ''}
                     onChange={(e) => handleChange('person_type', e.target.value)}
-                    placeholder="e.g. VC"
-                  />
+                  >
+                    <option value="" disabled>Select type</option>
+                    <option value="Family Office">Family Office</option>
+                    <option value="Founder">Founder</option>
+                    <option value="Multi-Family Office">Multi-Family Office</option>
+                    <option value="Operator">Operator</option>
+                    <option value="Angel">Angel</option>
+                    <option value="High Net Worth Individual">High Net Worth Individual</option>
+                    <option value="Private Equity">Private Equity</option>
+                    <option value="Private Credit">Private Credit</option>
+                    <option value="Venture Capital">Venture Capital</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
                 
                 <div className="info-item">
@@ -177,14 +187,22 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                     onChange={(e) => handleChange('last_meeting', e.target.value)}
                   />
                 </div>
+
                 <div className="info-item">
-                  <span className="info-label">Lead POC from Dream</span>
-                  <input
-                    type="text"
+                  <span className="info-label">Check Size Range</span>
+                  <select
                     value={person.dream_poc || ''}
                     onChange={(e) => handleChange('dream_poc', e.target.value)}
-                  />
+                  >
+                    <option value="">Select a POC</option>
+                    <option value="Aryan">Aryan</option>
+                    <option value="Jonah">Jonah</option>
+                    <option value="RB">RB</option>
+
+                  </select>
                 </div>
+
+
                 <div className="info-item">
                   <span className="info-label">Title</span>
                   <input
@@ -270,7 +288,9 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
             <div className="side-card">
               <h4>Documents</h4>
               <ul className="side-list">
+                {/* eslint-disable-next-line */}
                 <li><a href="#">Resume.pdf</a></li>
+                {/* eslint-disable-next-line */}
                 <li><a href="#">Meeting Notes.docx</a></li>
               </ul>
             </div>
