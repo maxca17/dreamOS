@@ -74,7 +74,7 @@ const Companies = (user) => {
         </div>
 
         <div className="filters-section">
-          <h4>Industry</h4>
+          <h4>Sector</h4>
           <label><input type="checkbox" defaultChecked /> All</label>
           <label><input type="checkbox" /> B2B / SaaS</label>
           <label><input type="checkbox" /> AI</label>

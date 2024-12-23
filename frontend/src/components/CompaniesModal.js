@@ -144,21 +144,27 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   <span className="info-label">Current Valuation</span>
                   {isEditing ? (
                     <input
-                      value={tempData?.valuation || ""}
+                      value={
+                        tempData?.valuation || tempData?.valuation === 0
+                          ? `$${parseFloat(tempData.valuation).toLocaleString()}`
+                          : ""
+                      }
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9.]/g, '');
-                        handleChange('valuation', value);
+                        handleChange('valuation', value ? parseFloat(value) : ''); // Store as a number
                       }}
                       placeholder="$0.00"
+                      style={{ textAlign: 'left' }}
                     />
                   ) : (
                     <span className="info-value">
-                      {data?.valuation
+                      {data?.valuation || data?.valuation === 0
                         ? `$${parseFloat(data.valuation).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
                         : "N/A"}
                     </span>
                   )}
                 </div>
+
 
                 <div className="info-item">
                   <span className="info-label">Revenue</span>

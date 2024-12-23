@@ -67,7 +67,8 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
         asks: tempData.asks,
         poc: tempData.poc,
         who_referred: tempData.who_referred,
-        status: tempData.status
+        status: tempData.status,
+        company_alive: tempData.company_alive
       })
       .eq('company_name', data.company_name);
 
@@ -122,16 +123,21 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
                   <span className="info-label">Current Valuation</span>
                   {isEditing ? (
                     <input
-                      value={tempData?.valuation || ""}
+                      value={
+                        tempData?.valuation || tempData?.valuation === 0
+                          ? `$${parseFloat(tempData.valuation).toLocaleString()}`
+                          : ""
+                      }
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9.]/g, '');
-                        handleChange('valuation', value);
+                        handleChange('valuation', value ? parseFloat(value) : ''); // Store as a number
                       }}
                       placeholder="$0.00"
+                      style={{ textAlign: 'left' }}
                     />
                   ) : (
                     <span className="info-value">
-                      {data?.valuation
+                      {data?.valuation || data?.valuation === 0
                         ? `$${parseFloat(data.valuation).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
                         : "N/A"}
                     </span>
@@ -142,11 +148,20 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
                   <span className="info-label">Revenue</span>
                   {isEditing ? (
                     <input
-                      value={tempData?.revenue || ""}
-                      onChange={(e) => handleChange('revenue', e.target.value)}
+                      value={tempData?.revenue ? `$${parseFloat(tempData.revenue).toLocaleString()}` : ""}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9.]/g, '');
+                        handleChange('revenue', value ? parseFloat(value) : ''); // Store as a number
+                      }}
+                      placeholder="$0.00"
+                      style={{ textAlign: 'left' }} // Align text to the left as you type
                     />
                   ) : (
-                    <span className="info-value">{data?.revenue || "N/A"}</span>
+                    <span className="info-value">
+                      {data?.revenue
+                        ? `$${parseFloat(data.revenue).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+                        : "N/A"}
+                    </span>
                   )}
                 </div>
 
@@ -319,6 +334,29 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">{data?.poc || "None"}</span>
                   )}
                 </div>
+
+
+
+
+                <div className="info-item">
+                  <span className="info-label">Is Company Alive?</span>
+                  {isEditing ? (
+                    <select
+                      value={tempData?.company_alive || ""}
+                      onChange={(e) => handleChange('company_alive', e.target.value)}
+                    >
+                      <option value="">Select Status</option>
+                      <option value="Alive">Alive</option>
+                      <option value="Dead">Dead</option>
+                    </select>
+                  ) : (
+                    <span className="info-value">{data?.company_alive || ""}</span>
+                  )}
+                </div>
+
+
+
+
 
                 <div className="info-item overview-full">
                   <span className="info-label">Overview</span>

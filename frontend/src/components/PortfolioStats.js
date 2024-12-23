@@ -14,6 +14,8 @@ function PortfolioStats() {
   const [fundIIInvestedAmount, setFundIIInvestedAmount] = useState(0);
   const [fundIITotalCompanies, setFundIITotalCompanies] = useState(0);
 
+  var fundISize = 50000000;
+
   useEffect(() => {
     // Fetch Fund I
     const fetchFundI = async () => {
@@ -68,10 +70,18 @@ function PortfolioStats() {
   // Render Fund I stats
   const renderFundIStats = () => {
     return (
-      <div className="stats-section">
-        <h2>Fund I Stats</h2>
-        <p>Total Invested: {fundIInvestedAmount.toFixed(2)}</p>
-        <p>Total Portfolio Companies: {fundITotalCompanies}</p>
+      <div className="stats-container">
+
+        <section className="stats-section">
+          <h2>Fund I Stats</h2>
+          <h3>Fund size: ${fundISize.toLocaleString()}</h3>
+          <h3>Total Deplyed</h3>
+          <p>Total Invested: {fundIInvestedAmount.toFixed(2)}</p>
+          <p>Total Portfolio Companies: {fundITotalCompanies}</p>
+        </section>
+        <section className="stats-section">
+          <h2>Fund II Breakdown</h2>
+        </section>
       </div>
     );
   };
