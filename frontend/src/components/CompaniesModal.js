@@ -170,21 +170,38 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   <span className="info-label">Revenue</span>
                   {isEditing ? (
                     <input
-                      value={tempData?.revenue || ""}
-                      onChange={(e) => handleChange('revenue', e.target.value)}
+                      value={tempData?.revenue ? `$${parseFloat(tempData.revenue).toLocaleString()}` : ""}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9.]/g, '');
+                        handleChange('revenue', value ? parseFloat(value) : ''); // Store as a number
+                      }}
+                      placeholder="$0.00"
+                      style={{ textAlign: 'left' }} // Align text to the left as you type
                     />
                   ) : (
-                    <span className="info-value">{data?.revenue || "N/A"}</span>
+                    <span className="info-value">
+                      {data?.revenue
+                        ? `$${parseFloat(data.revenue).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+                        : "N/A"}
+                    </span>
                   )}
                 </div>
 
                 <div className="info-item">
                   <span className="info-label">Region</span>
                   {isEditing ? (
-                    <input
+                    <select
                       value={tempData?.region || ""}
                       onChange={(e) => handleChange('region', e.target.value)}
-                    />
+                    >
+                      <option value="">Select Region</option>
+                      <option value="USA">USA</option>
+                      <option value="Europe">Europe</option>
+                      <option value="Asia">Asia</option>
+                      <option value="South America">South America</option>
+                      <option value="Africa">Africa</option>
+                      <option value="Australia">Australia</option>
+                    </select>
                   ) : (
                     <span className="info-value">{data?.region || "N/A"}</span>
                   )}
@@ -244,9 +261,8 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                       onChange={(e) => handleChange('sector', e.target.value)}
                     >
                       <option value="">Select Sector</option>
-                      <option value="CPG">CPG</option>
-                      <option value="FinTech">FinTech</option>
-                      <option value="Venture Capital">Venture Capital</option>
+                      <option value="Consumer">Consumer</option>
+                      <option value="Technology">Technology</option>
                     </select>
                   ) : (
                     <span className="info-value">{data?.sector || "N/A"}</span>

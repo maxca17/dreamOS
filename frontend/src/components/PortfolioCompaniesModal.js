@@ -126,11 +126,11 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
                       value={
                         tempData?.valuation || tempData?.valuation === 0
                           ? `$${parseFloat(tempData.valuation).toLocaleString()}`
-                          : ""
+                          : "$0.00"
                       }
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9.]/g, '');
-                        handleChange('valuation', value ? parseFloat(value) : ''); // Store as a number
+                        handleChange('valuation', value ? parseFloat(value) : 0); // Store as a number
                       }}
                       placeholder="$0.00"
                       style={{ textAlign: 'left' }}
@@ -139,7 +139,7 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
                     <span className="info-value">
                       {data?.valuation || data?.valuation === 0
                         ? `$${parseFloat(data.valuation).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
-                        : "N/A"}
+                        : "$0.00"}
                     </span>
                   )}
                 </div>
@@ -168,10 +168,18 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
                 <div className="info-item">
                   <span className="info-label">Region</span>
                   {isEditing ? (
-                    <input
+                    <select
                       value={tempData?.region || ""}
                       onChange={(e) => handleChange('region', e.target.value)}
-                    />
+                    >
+                      <option value="">Select Region</option>
+                      <option value="USA">USA</option>
+                      <option value="Europe">Europe</option>
+                      <option value="Asia">Asia</option>
+                      <option value="South America">South America</option>
+                      <option value="Africa">Africa</option>
+                      <option value="Australia">Australia</option>
+                    </select>
                   ) : (
                     <span className="info-value">{data?.region || "N/A"}</span>
                   )}
