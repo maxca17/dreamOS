@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../css/components/companies.css';
+import '../css/components/companies.css'; // Adjust to the correct CSS path
 import NavBar from '../constants/Navbar';
 import { supabase } from '../supabaseClient';
 import PortfolioCompaniesModal from './PortfolioCompaniesModal';
@@ -9,8 +9,14 @@ const PortfolioCompanies = (user) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
 
+  // Fetch all companies with 'Portfolio Company' in the status column
   const fetchCompanies = async () => {
-    const { data, error } = await supabase.from('companies').select('*').eq('status', 'Portfolio Company').order('company_name', { ascending: true });
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .eq('status', 'Portfolio Company')
+      .order('company_name', { ascending: true });
+
     if (error) {
       console.error('Error fetching companies:', error);
     } else {
@@ -18,16 +24,17 @@ const PortfolioCompanies = (user) => {
     }
   };
 
-
   useEffect(() => {
     fetchCompanies();
   }, []);
 
+  // Open the PortfolioCompaniesModal
   const handleOpenModal = (company) => {
     setSelectedCompany(company);
     setIsModalOpen(true);
   };
 
+  // Close the PortfolioCompaniesModal
   const handleCloseModal = () => {
     setSelectedCompany(null);
     setIsModalOpen(false);
@@ -37,6 +44,7 @@ const PortfolioCompanies = (user) => {
     <div className="companies-container">
       <NavBar />
 
+      {/* SIDEBAR FILTERS */}
       <aside className="filters-sidebar">
         <div className="filters-section">
           <h4>Company Status</h4>
@@ -91,9 +99,9 @@ const PortfolioCompanies = (user) => {
 
           <div className="filters-bar">
             <input 
-              type="text" 
-              placeholder="Search for companies" 
-              className="search-companies" 
+              type="text"
+              placeholder="Search for companies"
+              className="search-companies"
             />
             <button className="tag-filter">Portfolio</button>
 
@@ -102,11 +110,14 @@ const PortfolioCompanies = (user) => {
             </div>
           </div>
 
+          {/* TABLE OF COMPANIES */}
           <div className="companies-table-container">
             <table className="companies-table">
               <thead>
                 <tr>
-                  <th className="col-company">Company ({companies.length})</th>
+                  <th className="col-company">
+                    Company ({companies.length})
+                  </th>
                   <th className="col-poc">POC</th>
                   <th className="col-website">Website</th>
                   <th className="col-round">Round</th>
@@ -115,41 +126,60 @@ const PortfolioCompanies = (user) => {
               </thead>
               <tbody>
                 {companies.map((c, index) => (
-                  <tr 
-                    key={index} 
+                  <tr
+                    key={index}
                     className="company-row"
                     onClick={() => handleOpenModal(c)}
                     style={{ cursor: 'pointer' }}
                   >
                     <td className="company-info-cell">
                       <div className="company-info">
-                        <div 
-                          className="company-logo" 
-                          style={{ backgroundColor: c.logoColor || '#ccc' }}
-                        ></div>
+                        {/* Display the logo if logo_url exists, else a placeholder */}
+                        <div className="company-logo-wrapper">
+                          {c.logo_url ? (
+                            <img
+                              src={c.logo_url}
+                              alt={`${c.company_name} logo`}
+                              className="company-logo-img"
+                            />
+                          ) : (
+                            <div className="company-logo-placeholder">
+                              No Logo
+                            </div>
+                          )}
+                        </div>
+
                         <div className="company-text">
                           <strong>{c.company_name}</strong>
                           <p>{c.description}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="company-meta-cell">{c.dream_poc || 'N/A'}</td>
-                    <td className="company-meta-cell">{c.company_website || 'N/A'}</td>
-                    <td className="company-meta-cell">{c.round || 'N/A'}</td>
-                    <td className="company-meta-cell">{c.sector || 'N/A'}</td>
+                    <td className="company-meta-cell">
+                      {c.dream_poc || 'N/A'}
+                    </td>
+                    <td className="company-meta-cell">
+                      {c.company_website || 'N/A'}
+                    </td>
+                    <td className="company-meta-cell">
+                      {c.round || 'N/A'}
+                    </td>
+                    <td className="company-meta-cell">
+                      {c.sector || 'N/A'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
+          {/* MODAL */}
           {isModalOpen && selectedCompany && (
-            <PortfolioCompaniesModal 
-              company={selectedCompany} 
-              onClose={handleCloseModal} 
+            <PortfolioCompaniesModal
+              company={selectedCompany}
+              onClose={handleCloseModal}
             />
           )}
-
         </div>
       </div>
     </div>
