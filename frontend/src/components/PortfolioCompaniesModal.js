@@ -91,6 +91,7 @@ const PortfolioCompaniesModal = ({ company, onClose }) => {
         const filePath = `logos/${fileName}`;
 
         // 1) Upload the file
+        // eslint-disable-next-line
         const { data: uploadData, error: uploadError } = await supabase
           .storage
           .from('company-logos')

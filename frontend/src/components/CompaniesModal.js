@@ -10,14 +10,24 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
   const [data, setData] = useState(company);
   const [tempData, setTempData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const [showDecksModal, setShowDecksModal] = useState(false);
-  const [showFoundersModal, setShowFoundersModal] = useState(false); // ADDED: To control FoundersModal visibility
-  const [showInvestorUpdatesModal, setShowInvestorUpdatesModal] = useState(false); // ADDED: To control InvestorUpdatesModal visibility
-  const [showEquityOpsModal, setShowEquityOpsModal] = useState(false); // ADDED: To control EquityOpsModal visibility
-  const [deleteButton, setDeleteButton] = useState(false); // ADDED: To control DeleteModal visibility
-  const fetchData = useCallback(async () => {
 
-    // Fetch company data from the database
+  // Modals
+  const [showDecksModal, setShowDecksModal] = useState(false);
+  const [showFoundersModal, setShowFoundersModal] = useState(false);
+  const [showInvestorUpdatesModal, setShowInvestorUpdatesModal] = useState(false);
+  const [showEquityOpsModal, setShowEquityOpsModal] = useState(false);
+
+  // For Delete
+  const [deleteButton, setDeleteButton] = useState(false);
+
+  // NEW: State to handle image preview (for deck files, etc.)
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+
+  // NEW: For handling logo file uploads
+  const [logoFile, setLogoFile] = useState(null);
+
+  // Load company data from DB
+  const fetchData = useCallback(async () => {
     const { data: companyData, error } = await supabase
       .from('companies')
       .select('*')
@@ -45,54 +55,105 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
   const handleCancel = () => {
     setTempData(data);
     setIsEditing(false);
+    setLogoFile(null); // Reset the file selection
   };
 
   const handleSave = async () => {
-    const { error } = await supabase
-      .from('companies')
-      .update({
-        company_name: tempData.company_name,
-        valuation: tempData.valuation,
-        revenue: tempData.revenue,
-        region: tempData.region,
-        company_website: tempData.company_website,
-        city: tempData.city,
-        sector: tempData.sector,
-        one_liner: tempData.one_liner,
-        fund: tempData.fund,
-        other_investors: tempData.other_investors,
-        stage: tempData.stage,
-        overview: tempData.overview,
-        recent_update: tempData.recent_update,
-        wins: tempData.wins,
-        asks: tempData.asks,
-        poc: tempData.poc,
-        who_referred: tempData.who_referred,
-        status: tempData.status
-      })
-      .eq('company_name', data.company_name);
+    try {
+      // 1) If user uploaded a new logo, handle Supabase upload
+      let updatedLogoUrl = tempData.logo_url || null; // fallback if no new file
 
-    if (error) {
-      console.error('Error updating data:', error);
-    } else {
-      setData(tempData);
+      if (logoFile) {
+        // Derive file extension
+        const fileExt = logoFile.name.split('.').pop();
+        // Make a simple name based on the company
+        const fileName = `${(tempData.company_name || data.company_name)
+          .replace(/\s+/g, '_')}_logo.${fileExt}`;
+        const filePath = `logos/${fileName}`;
+
+        // Upload the file (remove unused 'data:' to avoid ESLint warnings)
+        const { error: uploadError } = await supabase.storage
+          .from('company-logos')
+          .upload(filePath, logoFile, { upsert: true });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        // Get the public URL
+        const { data: publicUrlData, error: publicUrlError } =
+          supabase.storage
+            .from('company-logos')
+            .getPublicUrl(filePath);
+
+        if (publicUrlError) {
+          throw publicUrlError;
+        }
+
+        updatedLogoUrl = publicUrlData.publicUrl;
+      }
+
+      // 2) Update the database record
+      const { error } = await supabase
+        .from('companies')
+        .update({
+          // Basic fields
+          company_name: tempData.company_name,
+          valuation: tempData.valuation,
+          revenue: tempData.revenue,
+          region: tempData.region,
+          company_website: tempData.company_website,
+          city: tempData.city,
+          sector: tempData.sector,
+          one_liner: tempData.one_liner,
+          fund: tempData.fund,
+          other_investors: tempData.other_investors,
+          stage: tempData.stage,
+          overview: tempData.overview,
+          recent_update: tempData.recent_update,
+          wins: tempData.wins,
+          asks: tempData.asks,
+          poc: tempData.poc,
+          who_referred: tempData.who_referred,
+          status: tempData.status,
+          // Add the updated logo_url
+          logo_url: updatedLogoUrl,
+          round: tempData.round,
+        })
+        .eq('company_name', data.company_name);
+
+      if (error) {
+        throw error;
+      }
+
+      // 3) Re-fetch data, exit edit mode
+      await fetchData();
       setIsEditing(false);
-      fetchData(); // re-fetch to ensure we have updated data
+      setLogoFile(null);
+
+    } catch (err) {
+      console.error('Error updating data:', err);
     }
   };
 
+  // Handle changes to editable fields
   const handleChange = (field, value) => {
     setTempData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Deletion
   const handleDelete = async () => {
-    const { error } = await supabase.from('companies').delete().eq('company_name', data.company_name);
+    const { error } = await supabase
+      .from('companies')
+      .delete()
+      .eq('company_name', data.company_name);
+
     if (error) {
       console.error('Error deleting data:', error);
     } else {
-      onClose(); // Close the modal after deletion
+      onClose(); // Close the modal
       if (onDelete) {
-        onDelete(); // Trigger parent component to refresh data
+        onDelete(); // Refresh parent
       }
     }
   };
@@ -103,6 +164,27 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteButton]);
+
+  // Determine if a file is an image by extension
+  const isImageFile = (fileName = '') => {
+    return /\.(png|jpe?g|gif|webp|bmp)$/i.test(fileName);
+  };
+
+  // If it's an image, show a popup; otherwise open in a new tab
+  const handleFileClick = (file) => {
+    if (isImageFile(file.file_name)) {
+      setImagePreviewUrl(file.file_url);
+    } else {
+      window.open(file.file_url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  // Handle changes to the logo file input
+  const handleLogoFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setLogoFile(e.target.files[0]);
+    }
+  };
 
   return (
     <div className="companies-modal-overlay">
@@ -117,7 +199,6 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                 <h3>Company Information</h3>
                 {!isEditing && (
                   <button className="pdf-button" onClick={handleEdit}>Edit</button>
-                  
                 )}
                 {isEditing && (
                   <div style={{ display: "flex", gap: "10px" }}>
@@ -127,7 +208,62 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   </div>
                 )}
               </div>
+
               <div className="company-info-grid">
+
+                {/* --- LOGO --- */}
+                <div className="info-item">
+                  <span className="info-label">Company Logo</span>
+                  {isEditing ? (
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoFileChange}
+                      />
+                      {logoFile ? (
+                        // Preview the newly selected file
+                        <img
+                          src={URL.createObjectURL(logoFile)}
+                          alt="Preview"
+                          style={{
+                            width: '100px',
+                            height: '100px',
+                            marginTop: '8px',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      ) : (
+                        // If no new file selected, show the existing logo (if any)
+                        data?.logo_url && (
+                          <img
+                            src={data.logo_url}
+                            alt="Current Logo"
+                            style={{
+                              width: '100px',
+                              height: '100px',
+                              marginTop: '8px',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        )
+                      )}
+                    </div>
+                  ) : (
+                    // Not editing: show the existing logo or a placeholder
+                    data?.logo_url ? (
+                      <img
+                        src={data.logo_url}
+                        alt="Company Logo"
+                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <span className="info-value">No logo uploaded.</span>
+                    )
+                  )}
+                </div>
+
+                {/* COMPANY NAME */}
                 <div className="info-item">
                   <span className="info-label">Company Name</span>
                   {isEditing ? (
@@ -140,6 +276,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   )}
                 </div>
 
+                {/* VALUATION */}
                 <div className="info-item">
                   <span className="info-label">Current Valuation</span>
                   {isEditing ? (
@@ -150,8 +287,8 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                           : ""
                       }
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9.]/g, '');
-                        handleChange('valuation', value ? parseFloat(value) : ''); // Store as a number
+                        const val = e.target.value.replace(/[^0-9.]/g, '');
+                        handleChange('valuation', val ? parseFloat(val) : '');
                       }}
                       placeholder="$0.00"
                       style={{ textAlign: 'left' }}
@@ -159,34 +296,43 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   ) : (
                     <span className="info-value">
                       {data?.valuation || data?.valuation === 0
-                        ? `$${parseFloat(data.valuation).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+                        ? `$${parseFloat(data.valuation)
+                            .toFixed(2)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
                         : "N/A"}
                     </span>
                   )}
                 </div>
 
-
+                {/* REVENUE */}
                 <div className="info-item">
                   <span className="info-label">Revenue</span>
                   {isEditing ? (
                     <input
-                      value={tempData?.revenue ? `$${parseFloat(tempData.revenue).toLocaleString()}` : ""}
+                      value={
+                        tempData?.revenue
+                          ? `$${parseFloat(tempData.revenue).toLocaleString()}`
+                          : ""
+                      }
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9.]/g, '');
-                        handleChange('revenue', value ? parseFloat(value) : ''); // Store as a number
+                        const val = e.target.value.replace(/[^0-9.]/g, '');
+                        handleChange('revenue', val ? parseFloat(val) : '');
                       }}
                       placeholder="$0.00"
-                      style={{ textAlign: 'left' }} // Align text to the left as you type
+                      style={{ textAlign: 'left' }}
                     />
                   ) : (
                     <span className="info-value">
                       {data?.revenue
-                        ? `$${parseFloat(data.revenue).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+                        ? `$${parseFloat(data.revenue)
+                            .toFixed(2)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
                         : "N/A"}
                     </span>
                   )}
                 </div>
 
+                {/* REGION */}
                 <div className="info-item">
                   <span className="info-label">Region</span>
                   {isEditing ? (
@@ -207,6 +353,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   )}
                 </div>
 
+                {/* WEBSITE */}
                 <div className="info-item">
                   <span className="info-label">Website</span>
                   {isEditing ? (
@@ -216,13 +363,18 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                     />
                   ) : (
                     <span className="info-value">
-                      <a href={data?.company_website || "#"} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={data?.company_website || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {data?.company_website || "N/A"}
                       </a>
                     </span>
                   )}
                 </div>
 
+                {/* CITY */}
                 <div className="info-item">
                   <span className="info-label">City</span>
                   {isEditing ? (
@@ -235,6 +387,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   )}
                 </div>
 
+                {/* STATUS */}
                 <div className="info-item">
                   <span className="info-label">Status</span>
                   {isEditing ? (
@@ -253,6 +406,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   )}
                 </div>
 
+                {/* SECTOR */}
                 <div className="info-item">
                   <span className="info-label">Primary Sector</span>
                   {isEditing ? (
@@ -269,6 +423,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   )}
                 </div>
 
+                {/* ONE LINER */}
                 <div className="info-item">
                   <span className="info-label">One Liner</span>
                   {isEditing ? (
@@ -281,6 +436,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   )}
                 </div>
 
+                {/* FUND */}
                 <div className="info-item">
                   <span className="info-label">Fund</span>
                   {isEditing ? (
@@ -289,10 +445,13 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                       onChange={(e) => handleChange('fund', e.target.value)}
                     />
                   ) : (
-                    <span className="info-value">{data?.fund || "Fund II"}</span>
+                    <span className="info-value">
+                      {data?.fund || "Fund II"}
+                    </span>
                   )}
                 </div>
 
+                {/* OTHER INVESTORS */}
                 <div className="info-item">
                   <span className="info-label">Other Investors</span>
                   {isEditing ? (
@@ -301,10 +460,13 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                       onChange={(e) => handleChange('other_investors', e.target.value)}
                     />
                   ) : (
-                    <span className="info-value">{data?.other_investors || "None"}</span>
+                    <span className="info-value">
+                      {data?.other_investors || "None"}
+                    </span>
                   )}
                 </div>
 
+                {/* WHO REFERRED */}
                 <div className="info-item">
                   <span className="info-label">Who Referred?</span>
                   {isEditing ? (
@@ -313,18 +475,21 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                       onChange={(e) => handleChange('who_referred', e.target.value)}
                     />
                   ) : (
-                    <span className="info-value">{data?.who_referred || "None"}</span>
+                    <span className="info-value">
+                      {data?.who_referred || "None"}
+                    </span>
                   )}
                 </div>
 
+                {/* ROUND */}
                 <div className="info-item">
-                  <span className="info-label">Stage</span>
+                  <span className="info-label">Round</span>
                   {isEditing ? (
                     <select
-                      value={tempData?.stage || ""}
-                      onChange={(e) => handleChange('stage', e.target.value)}
+                      value={tempData?.round || ""}
+                      onChange={(e) => handleChange('round', e.target.value)}
                     >
-                      <option value="">Select Stage</option>
+                      <option value="">Select Round</option>
                       <option value="None">None</option>
                       <option value="Pre-seed">Pre-seed</option>
                       <option value="Seed">Seed</option>
@@ -336,10 +501,13 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                       <option value="IPO">IPO</option>
                     </select>
                   ) : (
-                    <span className="info-value">{data?.stage || "Series D"}</span>
+                    <span className="info-value">
+                      {data?.round || "N/A"}
+                    </span>
                   )}
                 </div>
 
+                {/* POC */}
                 <div className="info-item">
                   <span className="info-label">POC</span>
                   {isEditing ? (
@@ -354,10 +522,13 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                       <option value="None">None</option>
                     </select>
                   ) : (
-                    <span className="info-value">{data?.poc || "None"}</span>
+                    <span className="info-value">
+                      {data?.poc || "None"}
+                    </span>
                   )}
                 </div>
 
+                {/* OVERVIEW */}
                 <div className="info-item overview-full">
                   <span className="info-label">Overview</span>
                   {isEditing ? (
@@ -372,14 +543,20 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   )}
                 </div>
 
+                {/* RECENT UPDATE */}
                 <div className="info-item overview-full">
-                  <span className="info-label">Recent founder update summary ({new Date().toLocaleDateString()})</span>
+                  <span className="info-label">
+                    Recent founder update summary ({new Date().toLocaleDateString()})
+                  </span>
                   {isEditing ? (
                     <textarea
                       value={tempData?.recent_update || ""}
                       onChange={(e) => {
                         handleChange('recent_update', e.target.value);
-                        setTempData((prev) => ({ ...prev, recent_update_date: new Date().toLocaleDateString() }));
+                        setTempData((prev) => ({
+                          ...prev,
+                          recent_update_date: new Date().toLocaleDateString(),
+                        }));
                       }}
                     />
                   ) : (
@@ -389,6 +566,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   )}
                 </div>
 
+                {/* WINS */}
                 <div className="info-item overview-full">
                   <span className="info-label">Wins</span>
                   {isEditing ? (
@@ -403,6 +581,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                   )}
                 </div>
 
+                {/* ASKS */}
                 <div className="info-item overview-full">
                   <span className="info-label">Asks</span>
                   {isEditing ? (
@@ -416,22 +595,20 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                     </span>
                   )}
                 </div>
-
               </div>
             </div>
           </div>
 
           {/* RIGHT COLUMN */}
           <div className="companies-modal-right">
-            {/* FOUNDERS CARD */}
-            {/* CHANGED: Use data?.founders (from DB) and add a button to open FoundersModal */}
+            {/* FOUNDERS */}
             <div className="side-card">
               <h4>
                 Founders
                 <button
                   className="expand-button"
                   style={{ float: 'right', background: 'none', border: 'none', cursor: 'pointer' }}
-                  onClick={() => setShowFoundersModal(true)} // SHOW FOUNDERS MODAL
+                  onClick={() => setShowFoundersModal(true)}
                 >
                   &#x25B6;
                 </button>
@@ -439,7 +616,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
               <div className="founders-list">
                 {(data?.founders || []).length > 0 ? (
                   (data.founders || [])
-                    .sort((a, b) => b.name ? b.name.localeCompare(a.name) : -1) // Sort founders Z-A, handling potential undefined names
+                    .sort((a, b) => (b.name || '').localeCompare(a.name || ''))
                     .map((f, idx) => (
                       <div className="founder-item" key={idx}>
                         <div className="founder-info">
@@ -453,6 +630,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
               </div>
             </div>
 
+            {/* DECKS AND MEMOS */}
             <div className="side-card">
               <h4>
                 Decks and Memos
@@ -468,7 +646,12 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                 <ul className="docs-list">
                   {data.files.map((file, i) => (
                     <li key={i}>
-                      <a href={file.file_url} target="_blank" rel="noopener noreferrer">{file.file_name}</a>
+                      <button
+                        className="file-link"
+                        onClick={() => handleFileClick(file)}
+                      >
+                        {file.file_name}
+                      </button>
                       <span className="doc-date">
                         {new Date(file.upload_date).toLocaleDateString()}
                       </span>
@@ -480,6 +663,7 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
               )}
             </div>
 
+            {/* INVESTOR UPDATES */}
             <div className="side-card">
               <h4>
                 Investor Updates
@@ -501,11 +685,20 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
                       const nameWithoutExt = update.update_name.split('.').slice(0, -1).join('.');
                       return (
                         <li key={i}>
-                          <a href={update.update_url} target="_blank" rel="noopener noreferrer">
-                            {nameWithoutExt.length > 20 
+                          <button
+                            className="file-link"
+                            onClick={() => {
+                              if (isImageFile(update.update_name)) {
+                                setImagePreviewUrl(update.update_url);
+                              } else {
+                                window.open(update.update_url, '_blank', 'noopener,noreferrer');
+                              }
+                            }}
+                          >
+                            {nameWithoutExt.length > 20
                               ? `${nameWithoutExt.slice(0, 20)}...${extension}`
                               : update.update_name}
-                          </a>
+                          </button>
                           <span className="doc-date">
                             {new Date(update.upload_date).toLocaleDateString()}
                           </span>
@@ -519,16 +712,16 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
 
               {showInvestorUpdatesModal && (
                 <InvestorUpdatesModal
-                  companyName={data.company_name} 
+                  companyName={data.company_name}
                   onClose={() => {
                     setShowInvestorUpdatesModal(false);
-                    fetchData(); // Fetch updated data when modal closes
+                    fetchData();
                   }}
                 />
               )}
             </div>
 
-
+            {/* EQUITY ENTRY OPS */}
             <div className="side-card">
               <h4>
                 Equity Entry Ops
@@ -553,36 +746,52 @@ const CompaniesModal = ({ company, onClose, onDelete }) => {
               )}
             </div>
 
-{showEquityOpsModal && (
-  <EquityOpsModal
-    companyName={data.company_name}
-    onClose={() => {
-      setShowEquityOpsModal(false);
-      fetchData(); // refresh company data after closing modal
-    }}
-  />
-)}
+            {showEquityOpsModal && (
+              <EquityOpsModal
+                companyName={data.company_name}
+                onClose={() => {
+                  setShowEquityOpsModal(false);
+                  fetchData();
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
 
+      {/* Image Preview Lightbox */}
+      {imagePreviewUrl && (
+        <div className="image-preview-modal">
+          <div className="image-preview-content">
+            <button
+              className="close-preview-btn"
+              onClick={() => setImagePreviewUrl(null)}
+            >
+              &times;
+            </button>
+            <img src={imagePreviewUrl} alt="Preview" className="image-preview-img" />
+          </div>
+        </div>
+      )}
+
+      {/* Decks and Memos Modal */}
       {showDecksModal && (
         <DecksAndMemosModal
           companyName={data.company_name}
           onClose={() => {
             setShowDecksModal(false);
-            fetchData(); // Fetch updated data when modal closes
+            fetchData();
           }}
         />
       )}
 
-      {/* ADDED: Show the FoundersModal when showFoundersModal is true */}
+      {/* Founders Modal */}
       {showFoundersModal && (
         <FoundersModal
           companyName={data.company_name}
           onClose={() => {
             setShowFoundersModal(false);
-            fetchData(); // Fetch updated data when modal closes
+            fetchData();
           }}
         />
       )}

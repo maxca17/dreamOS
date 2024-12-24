@@ -5,110 +5,264 @@ import { supabase } from '../supabaseClient';
 import CompaniesModal from './CompaniesModal';
 import AddCompanyModal from './AddCompanyModal';
 
-const Companies = (user) => {
+/**
+ * Filter configuration to drive the UI rendering for checkboxes.
+ */
+const FILTER_CONFIG = [
+  {
+    key: 'companyType',
+    title: 'Company Type',
+    options: [
+      { label: 'All', value: 'all' },
+      { label: 'Watchlist', value: 'watchlist' },
+      { label: 'Reviewing', value: 'reviewing' },
+      { label: 'Due Diligence', value: 'dueDiligence' },
+      { label: 'IC Review', value: 'icReview' },
+      { label: 'Approved - Legal', value: 'approvedLegal' },
+      { label: 'Approved - Not Funded', value: 'approvedNotFunded' },
+      { label: 'Warehouse Deals', value: 'warehouse' },
+      { label: 'Portfolio', value: 'portfolio' },
+      { label: 'Passed', value: 'passed' }
+    ]
+  },
+  {
+    key: 'poc',
+    title: 'POC',
+    options: [
+      { label: 'All', value: 'all' },
+      { label: 'Richard Blankenship', value: 'Richard' },
+      { label: 'Joe Kakaty', value: 'joe' },
+      { label: 'Jonah Vella', value: 'jonah' },
+      { label: 'Eric Wong', value: 'eric' },
+      { label: 'Oli Harris', value: 'oli' },
+      { label: 'Aryan Bhatnagar', value: 'Aryan' }
+    ]
+  },
+  {
+    key: 'sector',
+    title: 'Sector',
+    options: [
+      { label: 'All', value: 'all' },
+      { label: 'Consumer', value: 'Consumer' },
+      { label: 'Technology', value: 'Technology' },
+      { label: 'Venture Capital', value: 'vc' },
+      { label: 'Private Equity', value: 'pe' }
+    ]
+  },
+  {
+    key: 'valuation',
+    title: 'Valuation',
+    options: [
+      { label: 'All', value: 'all' },
+      { label: '+5b', value: 'plus5b' },
+      { label: '1-5b', value: 'b1to5' },
+      { label: '500m-1b', value: 'm500to1b' },
+      { label: '100-500m', value: 'm100to500' },
+      { label: '50-100m', value: 'm50to100' },
+      { label: '<50m', value: 'under50m' },
+      { label: 'N/A', value: 'na' }
+    ]
+  },
+  {
+    key: 'round',
+    title: 'Round',
+    options: [
+      { label: 'All', value: 'all' },
+      { label: 'Pre-Seed', value: 'preSeed' },
+      { label: 'Seed', value: 'seed' },
+      { label: 'Series A', value: 'seriesA' },
+      { label: 'Series B', value: 'seriesB' },
+      { label: 'Series C', value: 'seriesC' },
+      { label: 'Series D', value: 'seriesD' },
+      { label: 'Bridge Round', value: 'bridge' },
+      { label: 'Growth Round', value: 'growth' },
+      { label: 'None-N/A', value: 'none' }
+    ]
+  },
+  {
+    key: 'processStage',
+    title: 'Process Stage',
+    options: [
+      { label: 'All', value: 'all' },
+      { label: 'Deck Review', value: 'deckReview' },
+      { label: 'Intro Call', value: 'introCall' },
+      { label: 'Second Call', value: 'secondCall' },
+      { label: 'Diligence', value: 'diligence' }
+    ]
+  }
+];
+
+/**
+ * Initializes all filters to 'all'.
+ */
+function initFilters() {
+  const initialFilters = {};
+  FILTER_CONFIG.forEach(({ key, options }) => {
+    initialFilters[key] = options.reduce((acc, opt) => {
+      // default everything to false except 'all' which is true
+      acc[opt.value] = opt.value === 'all';
+      return acc;
+    }, {});
+  });
+  return initialFilters;
+}
+
+const Companies = () => {
   const [companies, setCompanies] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
 
-  const [filters, setFilters] = useState({
-    companyType: { all: true },
-    dealLead: { all: true },
-    sector: { all: true },
-    valuation: { all: true },
-    round: { all: true },
-    processStage: { all: true }
-  });
+  // One object containing all filter states
+  const [filters, setFilters] = useState(initFilters);
 
-  // Fetch the list of companies from Supabase
+  // ========== FETCH COMPANIES FROM SUPABASE ==========
   const fetchCompanies = async () => {
-    const { data, error } = await supabase
-      .from('companies')
-      .select('*')
-      .order('company_name', { ascending: true });
+    try {
+      let { data, error } = await supabase
+        .from('companies')
+        .select('*')
+        .order('company_name', { ascending: true });
 
-    if (error) {
+      if (error) throw error;
+      setCompanies(data || []);
+    } catch (error) {
       console.error('Error fetching companies:', error);
-    } else {
-      setCompanies(data);
     }
   };
 
-  // Fetch on initial load
+  // Fetch on mount
   useEffect(() => {
     fetchCompanies();
   }, []);
 
-  // Re-fetch when the modal closes (to refresh any changes)
+  // Re-fetch when the modal closes (only if needed)
   useEffect(() => {
     if (!isModalOpen) {
       fetchCompanies();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isModalOpen]);
 
-  // Open the CompaniesModal
+  // ========== MODAL HANDLERS ==========
   const handleOpenModal = (company) => {
     setSelectedCompany(company);
     setIsModalOpen(true);
   };
 
-  // Close the CompaniesModal
   const handleCloseModal = () => {
     setSelectedCompany(null);
     setIsModalOpen(false);
   };
 
-  // Search input handler
+  // ========== SEARCH HANDLER ==========
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  // Handle individual filter changes
-  const handleFilterChange = (filterType, value) => {
+  // ========== FILTER HANDLER ==========
+  const handleFilterChange = (filterKey, value) => {
     setFilters((prev) => {
-      // If 'All' is toggled, reset or select all
+      const newFilterState = { ...prev[filterKey] };
+
       if (value === 'all') {
-        const newState = { ...prev[filterType] };
-        if (!prev[filterType].all) {
-          Object.keys(newState).forEach((key) => {
-            newState[key] = key === 'all';
+        // toggling 'All' => set 'all' to true, everything else to false
+        const isCurrentlyAll = newFilterState.all;
+        Object.keys(newFilterState).forEach((k) => {
+          newFilterState[k] = false;
+        });
+        newFilterState.all = !isCurrentlyAll; // toggle
+      } else {
+        // toggle specific value, uncheck 'all'
+        newFilterState[value] = !newFilterState[value];
+        newFilterState.all = false;
+
+        // if nothing is selected after toggling, revert to 'all'
+        const somethingSelected = Object.keys(newFilterState).some(
+          (k) => k !== 'all' && newFilterState[k]
+        );
+        if (!somethingSelected) {
+          // revert to all
+          Object.keys(newFilterState).forEach((k) => {
+            newFilterState[k] = k === 'all';
           });
         }
-        return {
-          ...prev,
-          [filterType]: newState
-        };
-      } else {
-        // Toggle a single checkbox value
-        const newFilterState = {
-          ...prev[filterType],
-          all: false,
-          [value]: !prev[filterType][value]
-        };
-
-        // Check if we have any option selected
-        const hasCheckedOption = Object.entries(newFilterState).some(
-          ([key, val]) => key !== 'all' && val
-        );
-        // If nothing is selected, default back to 'all'
-        if (!hasCheckedOption) {
-          newFilterState.all = true;
-        }
-
-        return {
-          ...prev,
-          [filterType]: newFilterState
-        };
       }
+      return { ...prev, [filterKey]: newFilterState };
     });
   };
 
-  // Simple filtering for searchTerm (you can expand this to use filter checkboxes too, if needed)
-  const filteredCompanies = companies.filter((company) =>
-    company.company_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // ========== FILTERED COMPANIES ==========
+  const filteredCompanies = companies.filter((company) => {
+    // 1) search term
+    const matchesSearch = company.company_name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    // 2) destructure all filters
+    const { companyType, poc, sector, valuation, round, processStage } = filters;
+
+    // 3) check each group
+    const matchesCompanyType =
+      companyType.all ||
+      Object.keys(companyType).some((filterValue) => {
+        if (filterValue === 'all') return false;
+        if (!companyType[filterValue]) return false;
+        return company.company_type === filterValue;
+      });
+
+    const matchesPoc =
+      poc.all ||
+      Object.keys(poc).some((filterValue) => {
+        if (filterValue === 'all') return false;
+        if (!poc[filterValue]) return false;
+        // match the DB's poc column
+        return company.poc === filterValue;
+      });
+
+    const matchesSector =
+      sector.all ||
+      Object.keys(sector).some((filterValue) => {
+        if (filterValue === 'all') return false;
+        if (!sector[filterValue]) return false;
+        return company.sector === filterValue;
+      });
+
+    const matchesValuation =
+      valuation.all ||
+      Object.keys(valuation).some((filterValue) => {
+        if (filterValue === 'all') return false;
+        if (!valuation[filterValue]) return false;
+        return company.valuation === filterValue;
+      });
+
+    const matchesRound =
+      round.all ||
+      Object.keys(round).some((filterValue) => {
+        if (filterValue === 'all') return false;
+        if (!round[filterValue]) return false;
+        return company.round === filterValue;
+      });
+
+    const matchesProcessStage =
+      processStage.all ||
+      Object.keys(processStage).some((filterValue) => {
+        if (filterValue === 'all') return false;
+        if (!processStage[filterValue]) return false;
+        return company.process_stage === filterValue;
+      });
+
+    // 4) combine all checks
+    return (
+      matchesSearch &&
+      matchesCompanyType &&
+      matchesPoc &&
+      matchesSector &&
+      matchesValuation &&
+      matchesRound &&
+      matchesProcessStage
+    );
+  });
 
   return (
     <div className="companies-container">
@@ -116,391 +270,21 @@ const Companies = (user) => {
 
       {/* SIDEBAR FOR FILTERS */}
       <aside className="filters-sidebar">
-        <div className="filters-section">
-          <h4>Company Type</h4>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.all}
-              onChange={() => handleFilterChange('companyType', 'all')}
-            /> 
-            All
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.watchlist}
-              onChange={() => handleFilterChange('companyType', 'watchlist')}
-            /> 
-            Watchlist
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.reviewing}
-              onChange={() => handleFilterChange('companyType', 'reviewing')}
-            /> 
-            Reviewing
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.dueDiligence}
-              onChange={() => handleFilterChange('companyType', 'dueDiligence')}
-            /> 
-            Due Diligence
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.icReview}
-              onChange={() => handleFilterChange('companyType', 'icReview')}
-            /> 
-            IC Review
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.approvedLegal}
-              onChange={() => handleFilterChange('companyType', 'approvedLegal')}
-            /> 
-            Approved - Legal
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.approvedNotFunded}
-              onChange={() =>
-                handleFilterChange('companyType', 'approvedNotFunded')
-              }
-            /> 
-            Approved - Not Funded
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.warehouse}
-              onChange={() => handleFilterChange('companyType', 'warehouse')}
-            /> 
-            Warehouse Deals
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.portfolio}
-              onChange={() => handleFilterChange('companyType', 'portfolio')}
-            /> 
-            Portfolio
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.companyType.passed}
-              onChange={() => handleFilterChange('companyType', 'passed')}
-            /> 
-            Passed
-          </label>
-        </div>
-
-        <div className="filters-section">
-          <h4>Deal Lead</h4>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.dealLead.all}
-              onChange={() => handleFilterChange('dealLead', 'all')}
-            /> 
-            All
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.dealLead.richard}
-              onChange={() => handleFilterChange('dealLead', 'richard')}
-            /> 
-            Richard Blankenship
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.dealLead.joe}
-              onChange={() => handleFilterChange('dealLead', 'joe')}
-            /> 
-            Joe Kakaty
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.dealLead.jonah}
-              onChange={() => handleFilterChange('dealLead', 'jonah')}
-            /> 
-            Jonah Vella
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.dealLead.eric}
-              onChange={() => handleFilterChange('dealLead', 'eric')}
-            /> 
-            Eric Wong
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.dealLead.oli}
-              onChange={() => handleFilterChange('dealLead', 'oli')}
-            /> 
-            Oli Harris
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.dealLead.aryan}
-              onChange={() => handleFilterChange('dealLead', 'aryan')}
-            /> 
-            Aryan Bhatnagar
-          </label>
-        </div>
-
-        <div className="filters-section">
-          <h4>Sector</h4>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.sector.all}
-              onChange={() => handleFilterChange('sector', 'all')}
-            /> 
-            All
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.sector.cpg}
-              onChange={() => handleFilterChange('sector', 'cpg')}
-            /> 
-            CPG
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.sector.technology}
-              onChange={() => handleFilterChange('sector', 'technology')}
-            /> 
-            Technology
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.sector.vc}
-              onChange={() => handleFilterChange('sector', 'vc')}
-            /> 
-            Venture Capital
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.sector.pe}
-              onChange={() => handleFilterChange('sector', 'pe')}
-            /> 
-            Private Equity
-          </label>
-        </div>
-
-        <div className="filters-section">
-          <h4>Valuation</h4>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.valuation.all}
-              onChange={() => handleFilterChange('valuation', 'all')}
-            /> 
-            All
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.valuation.plus5b}
-              onChange={() => handleFilterChange('valuation', 'plus5b')}
-            /> 
-            +5b
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.valuation.b1to5}
-              onChange={() => handleFilterChange('valuation', 'b1to5')}
-            /> 
-            1-5b
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.valuation.m500to1b}
-              onChange={() => handleFilterChange('valuation', 'm500to1b')}
-            /> 
-            500m-1b
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.valuation.m100to500}
-              onChange={() => handleFilterChange('valuation', 'm100to500')}
-            /> 
-            100-500m
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.valuation.m50to100}
-              onChange={() => handleFilterChange('valuation', 'm50to100')}
-            /> 
-            50-100m
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.valuation.under50m}
-              onChange={() => handleFilterChange('valuation', 'under50m')}
-            /> 
-            &lt;50m
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.valuation.na}
-              onChange={() => handleFilterChange('valuation', 'na')}
-            /> 
-            N/A
-          </label>
-        </div>
-
-        <div className="filters-section">
-          <h4>Round</h4>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.all}
-              onChange={() => handleFilterChange('round', 'all')}
-            /> 
-            All
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.preSeed}
-              onChange={() => handleFilterChange('round', 'preSeed')}
-            /> 
-            Pre-Seed
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.seed}
-              onChange={() => handleFilterChange('round', 'seed')}
-            /> 
-            Seed
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.seriesA}
-              onChange={() => handleFilterChange('round', 'seriesA')}
-            /> 
-            Series A
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.seriesB}
-              onChange={() => handleFilterChange('round', 'seriesB')}
-            /> 
-            Series B
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.seriesC}
-              onChange={() => handleFilterChange('round', 'seriesC')}
-            /> 
-            Series C
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.seriesD}
-              onChange={() => handleFilterChange('round', 'seriesD')}
-            /> 
-            Series D
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.bridge}
-              onChange={() => handleFilterChange('round', 'bridge')}
-            /> 
-            Bridge Round
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.growth}
-              onChange={() => handleFilterChange('round', 'growth')}
-            /> 
-            Growth Round
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.round.none}
-              onChange={() => handleFilterChange('round', 'none')}
-            /> 
-            None-N/A
-          </label>
-        </div>
-
-        <div className="filters-section">
-          <h4>Process Stage</h4>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.processStage.all}
-              onChange={() => handleFilterChange('processStage', 'all')}
-            /> 
-            All
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.processStage.deckReview}
-              onChange={() => handleFilterChange('processStage', 'deckReview')}
-            /> 
-            Deck Review
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.processStage.introCall}
-              onChange={() => handleFilterChange('processStage', 'introCall')}
-            /> 
-            Intro Call
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.processStage.secondCall}
-              onChange={() => handleFilterChange('processStage', 'secondCall')}
-            /> 
-            Second Call
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.processStage.diligence}
-              onChange={() => handleFilterChange('processStage', 'diligence')}
-            /> 
-            Diligence
-          </label>
-        </div>
+        {FILTER_CONFIG.map(({ key, title, options }) => (
+          <div className="filters-section" key={key}>
+            <h4>{title}</h4>
+            {options.map(({ label, value }) => (
+              <label key={value}>
+                <input
+                  type="checkbox"
+                  checked={filters[key][value]}
+                  onChange={() => handleFilterChange(key, value)}
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        ))}
       </aside>
 
       {/* MAIN CONTENT */}
@@ -518,7 +302,6 @@ const Companies = (user) => {
               value={searchTerm}
               onChange={handleSearchChange}
             />
-
             <div className="sort-dropdown">
               <button
                 className="sort-btn"
@@ -553,7 +336,6 @@ const Companies = (user) => {
                   >
                     <td className="company-info-cell">
                       <div className="company-info">
-                        {/* Display company logo or a placeholder */}
                         <div className="company-logo-wrapper">
                           {c.logo_url ? (
                             <img
@@ -574,8 +356,9 @@ const Companies = (user) => {
                         </div>
                       </div>
                     </td>
+                    {/* We use c.poc to display, matching DB column */}
                     <td className="company-meta-cell">
-                      {c.dream_poc || 'N/A'}
+                      {c.poc || 'N/A'}
                     </td>
                     <td className="company-meta-cell">
                       {c.company_website || 'N/A'}
@@ -590,13 +373,16 @@ const Companies = (user) => {
 
           {/* MODALS */}
           {isModalOpen && selectedCompany && (
-            <CompaniesModal company={selectedCompany} onClose={handleCloseModal} />
+            <CompaniesModal
+              company={selectedCompany}
+              onClose={handleCloseModal}
+            />
           )}
 
           {showAddCompanyModal && (
             <AddCompanyModal
               onClose={() => setShowAddCompanyModal(false)}
-              onCompanyAdded={fetchCompanies} 
+              onCompanyAdded={fetchCompanies}
             />
           )}
         </div>

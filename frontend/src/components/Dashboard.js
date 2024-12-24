@@ -227,7 +227,7 @@ const Dashboard = () => {
 
         <div className="content-sections">
           <div className="unicorns-section">
-            <h3>Dream Top Unicorn Breakouts</h3>
+            <h3>Dream Top Breakouts</h3>
             <ul className="unicorn-list">
               {unicorns.map((u, index) => (
                 <li key={index} className="unicorn-item">

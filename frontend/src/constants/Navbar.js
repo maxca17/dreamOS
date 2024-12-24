@@ -16,10 +16,7 @@ const NavBar = () => {
             <Link to="/dashboard">Home</Link>
           </li>
           <li className={location.pathname === "/companies" ? "active" : ""}>
-            <Link to="/companies">Companies</Link>
-          </li>
-          <li className={location.pathname === "/people" ? "active" : ""}>
-            <Link to="/people">Network</Link>
+            <Link to="/companies">Pipeline</Link>
           </li>
           <li className={location.pathname === "/portfoliocompanies" ? "active" : ""}>
             <Link to="/portfoliocompanies">Portfolio Companies</Link>
@@ -29,6 +26,9 @@ const NavBar = () => {
           </li>
           <li className={location.pathname === "/lps" ? "active" : ""}>
             <Link to="/lps">LPs</Link>
+          </li>
+          <li className={location.pathname === "/people" ? "active" : ""}>
+            <Link to="/people">Network</Link>
           </li>
         </ul>
       </nav>
