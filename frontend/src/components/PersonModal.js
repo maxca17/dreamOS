@@ -204,7 +204,7 @@ function PersonModal({ person: initialPerson, onClose, onSave }) {
                 </div>
 
                 <div className="info-item">
-                  <span className="info-label">Check Size Range</span>
+                  <span className="info-label">Dream POC</span>
                   <select
                     value={person.dream_poc || ''}
                     onChange={(e) => handleChange('dream_poc', e.target.value)}

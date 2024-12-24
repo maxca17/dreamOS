@@ -1,0 +1,169 @@
+/* lps.css */
+
+/********************************************
+  1) Page Container
+  - Mirroring the "people-page-container" approach:
+    .people-page-container { display: flex; ... }
+********************************************/
+.lps-page-container {
+  display: flex;            /* Navbar on the left, main content on the right */
+  min-height: 100vh;        /* Full vertical height */
+  background-color: #f9f9f9; /* Light neutral background (optional) */
+}
+
+/********************************************
+  2) Main Content Area
+  - Like .people-main-content in your People page
+********************************************/
+.lps-main-content {
+  flex: 1;                  /* Take the space not used by navbar */
+  padding: 1.5rem 2rem;     /* Spacing around content */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  color: #333;              /* Base text color */
+}
+
+/********************************************
+  3) Fund Tabs
+********************************************/
+.fund-tabs {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.fund-tabs .tab {
+  background-color: #e9ecef;
+  color: #495057;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.fund-tabs .tab:hover {
+  background-color: #dee2e6;
+}
+
+.fund-tabs .tab.active {
+  background-color: #4e2d8f; /* Your brand purple */
+  color: #fff;
+}
+
+/********************************************
+  4) LPs Header (Title & Add Button)
+********************************************/
+.lps-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.lps-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* "Add LP" Button */
+.add-lp-btn {
+  background-color: #4e2d8f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-lp-btn:hover {
+  background-color: #3f2471;
+}
+
+/********************************************
+  5) Table Container & Table
+********************************************/
+.lps-table-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.lps-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.lps-table thead {
+  background-color: #f1f3f5;
+}
+
+.lps-table th,
+.lps-table td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: #495057;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.lps-table th {
+  font-weight: 600;
+}
+
+.lps-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Hover effect for rows */
+.lp-row:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+/********************************************
+  6) Responsive Styles
+********************************************/
+@media (max-width: 768px) {
+  .lps-main-content {
+    padding: 1rem;
+  }
+
+  .lps-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .fund-tabs .tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .add-lp-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .lps-table th,
+  .lps-table td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .fund-tabs .tab {
+    font-size: 0.85rem;
+  }
+
+  .lps-header h2 {
+    font-size: 1.1rem;
+  }
+}

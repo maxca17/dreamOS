@@ -121,7 +121,6 @@ function People() {
     <div className="people-page-container">
       <Navbar />
       <div className="people-main-content">
-        <h1 className="people-title">People</h1>
 
         {/** Toggle for Basic vs. Advanced search */}
         <div className="search-mode-toggle">
@@ -154,94 +153,94 @@ function People() {
           </div>
         )}
 
-        {/** Advanced search fields */}
-        {isAdvanced && (
-          <div className="advanced-search-container">
-            <div className="advanced-search-row">
-              <div className="advanced-search-field">
-                <label>Name</label>
-                <input
-                  name="name"
-                  type="text"
-                  value={advancedSearch.name}
-                  onChange={handleAdvancedChange}
-                />
-              </div>
-              <div className="advanced-search-field">
-                <label>Title</label>
-                <input
-                  name="title"
-                  type="text"
-                  value={advancedSearch.title}
-                  onChange={handleAdvancedChange}
-                />
-              </div>
-              <div className="advanced-search-field">
-                <label>Type</label>
-                <input
-                  name="person_type"
-                  type="text"
-                  value={advancedSearch.person_type}
-                  onChange={handleAdvancedChange}
-                />
-              </div>
-              <div className="advanced-search-field">
-                <label>Sector</label>
-                <input
-                  name="sector_focus"
-                  type="text"
-                  value={advancedSearch.sector_focus}
-                  onChange={handleAdvancedChange}
-                />
-              </div>
-            </div>
+{isAdvanced && (
+  <div className="advanced-search-container">
+    {/* Optional heading for clarity */}
+    <h2 className="advanced-search-heading">Advanced Search</h2>
 
-            <div className="advanced-search-row">
-              <div className="advanced-search-field">
-                <label>Company</label>
-                <input
-                  name="company_name"
-                  type="text"
-                  value={advancedSearch.company_name}
-                  onChange={handleAdvancedChange}
-                />
-              </div>
-              <div className="advanced-search-field">
-                <label>Email</label>
-                <input
-                  name="email"
-                  type="text"
-                  value={advancedSearch.email}
-                  onChange={handleAdvancedChange}
-                />
-              </div>
-              <div className="advanced-search-field">
-                <label>City</label>
-                <input
-                  name="city"
-                  type="text"
-                  value={advancedSearch.city}
-                  onChange={handleAdvancedChange}
-                />
-              </div>
-              <div className="advanced-search-field">
-                <label>LinkedIn</label>
-                <input
-                  name="linkedin"
-                  type="text"
-                  value={advancedSearch.linkedin}
-                  onChange={handleAdvancedChange}
-                />
-              </div>
-            </div>
+    <div className="advanced-search-grid">
+      <div className="advanced-search-field">
+        <label>Name</label>
+        <input
+          name="name"
+          type="text"
+          value={advancedSearch.name}
+          onChange={handleAdvancedChange}
+        />
+      </div>
+      <div className="advanced-search-field">
+        <label>Title</label>
+        <input
+          name="title"
+          type="text"
+          value={advancedSearch.title}
+          onChange={handleAdvancedChange}
+        />
+      </div>
+      <div className="advanced-search-field">
+        <label>Type</label>
+        <input
+          name="person_type"
+          type="text"
+          value={advancedSearch.person_type}
+          onChange={handleAdvancedChange}
+        />
+      </div>
+      <div className="advanced-search-field">
+        <label>Sector</label>
+        <input
+          name="sector_focus"
+          type="text"
+          value={advancedSearch.sector_focus}
+          onChange={handleAdvancedChange}
+        />
+      </div>
+      <div className="advanced-search-field">
+        <label>Company</label>
+        <input
+          name="company_name"
+          type="text"
+          value={advancedSearch.company_name}
+          onChange={handleAdvancedChange}
+        />
+      </div>
+      <div className="advanced-search-field">
+        <label>Email</label>
+        <input
+          name="email"
+          type="text"
+          value={advancedSearch.email}
+          onChange={handleAdvancedChange}
+        />
+      </div>
+      <div className="advanced-search-field">
+        <label>City</label>
+        <input
+          name="city"
+          type="text"
+          value={advancedSearch.city}
+          onChange={handleAdvancedChange}
+        />
+      </div>
+      <div className="advanced-search-field">
+        <label>LinkedIn</label>
+        <input
+          name="linkedin"
+          type="text"
+          value={advancedSearch.linkedin}
+          onChange={handleAdvancedChange}
+        />
+      </div>
+    </div>
 
-            <div className="people-controls advanced-search-actions">
-              <button className="people-add-button" onClick={handleAddPerson}>
-                Add Person
-              </button>
-            </div>
-          </div>
-        )}
+    <div className="advanced-search-actions">
+      <button className="people-add-button" onClick={handleAddPerson}>
+        Add Person
+      </button>
+    </div>
+  </div>
+)}
+
 
         <h1>Dream Network</h1>
 
